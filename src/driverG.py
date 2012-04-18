@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QThread, QObject
 from ui.wizard_generic import Ui_RepWizard
@@ -111,9 +112,10 @@ class RepWizard(QtGui.QWizard):
         self.model.setSuffixes(javaSuffix, cxxSuffix, hxxSuffix)
         return True
 
-    def validatePage3(self): #validating ccFinder input page
-        path = self.ui.DirLine_ccfx.text()
-        if self.model.setCcfxDirectory(path) is False:
+    #validating ccFinder input page
+    def validatePage3(self):
+        path = str(self.ui.DirLine_ccfx.text()) + os.sep + 'ccfx'
+        if self.model.setCcfxPath(path) is False:
             self.ui.errorLabel_ccfx.setVisible(True)
             return False
         self.ui.errorLabel_ccfx.setVisible(False)
@@ -130,8 +132,8 @@ class RepWizard(QtGui.QWizard):
 
     def setCCFinderPath(self):
         self.pickDirectory(self.ui.DirLine_ccfx, 'Select ccFinder directory')
-        path = self.ui.DirLine_ccfx.text()
-        if self.model.setCcfxDirectory(path):
+        path = self.ui.DirLine_ccfx.text() + os.sep + 'ccfx'
+        if self.model.setCcfxPath(path):
             self.ui.errorLabel_ccfx.setVisible(False)
             return True
         self.ui.errorLabel_ccfx.setVisible(True)
@@ -213,7 +215,8 @@ if __name__ == "__main__":
                 '/home/wiley/ws/RepertoireTool/src',
                 '.java',
                 '.c',
-                '.h'
+                '.h',
+                ''
                 )
     elif len(sys.argv) > 1 and 'braytest' == sys.argv[1]:
         myapp.setTestValues(

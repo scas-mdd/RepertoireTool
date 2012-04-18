@@ -70,15 +70,12 @@ class RepertoireModel:
                 'hxx'  : DiffFilter(hSuff)
                 }
 
-    def setCcfxDirectory(self, path):
+    def setCcfxPath(self, path):
         path = str(path)
-        if not os.path.isdir(path):
+        if not os.path.isfile(path) or not os.path.exists(path):
             return False
-        ccfx_binary = path + "/ccfx"
-        if os.path.exists(ccfx_binary):
-            self.ccfx.ccfxPath = ccfx_binary
-            return True
-        return False
+        self.ccfx.ccfxPath = path
+        return True
 
     def setCcfxToken(self, token_size):
         self.ccfx.tokenSize = token_size
@@ -97,7 +94,7 @@ class RepertoireModel:
 
 
     def filterDiffProjs(self, interface):
-      # 3 different file formats, 2 operations each (filter/convert) 
+      # 3 different file formats, 2 operations each (filter/convert)
         self.num_operations = len(os.listdir(self.paths['proj0'])) * 3 * 2
         self.num_operations += len(os.listdir(self.paths['proj1'])) * 3 * 2
         self.num_operations += 2*6 #2 ccFinder call for all 6 output files
@@ -182,9 +179,9 @@ class RepertoireModel:
         converter.convert(self.pb, callback)
 
         #new and old for 3 langs
-        self.num_operations = 3 * 2 
+        self.num_operations = 3 * 2
         self.operations_so_far = IntegerWrapper(0)
-        
+
 
         clone_path = self.pb.getCCFXOutputPath()
         # Third, call ccfx for each directory
@@ -216,11 +213,11 @@ class RepertoireModel:
                 self.operations_so_far.incr() / float(self.num_operations))
         if not worked:
             return ('ccFinderX execution failed', False)
-       
-         # Fourth, build up our database of clones 
+
+         # Fourth, build up our database of clones
         print "Repertoire filtering...."
         #new and old for 3 langs
-        self.num_operations = 3 * 2 
+        self.num_operations = 3 * 2
         self.operations_so_far = IntegerWrapper(0)
 
         for lang in ['java', 'cxx', 'hxx']:
@@ -237,7 +234,7 @@ class RepertoireModel:
                 output.writeToFile(rep_out_path + lang + suffix)
                 interface.progress('Repertoire filtering based on operation',
                                    self.operations_so_far.incr() / float(self.num_operations))
-                
+
 
         print "Processing successful!!"
         return ('Processing successful', True)
