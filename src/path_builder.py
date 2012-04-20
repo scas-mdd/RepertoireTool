@@ -19,6 +19,12 @@ class PathBuilder:
             os.makedirs(path)
         self.exists.append(path)
 
+    def getDiffPath(self, proj, lang):
+        path = (self.root + os.sep + proj + os.sep +
+                lang + os.sep + "raw_diffs" + os.sep)
+        self.makeExist(path)
+        return path
+
     def getFilterOutputPath(self, proj, lang):
         path = (self.root + os.sep + proj + os.sep +
                 lang + os.sep + "filter_output" + os.sep)
@@ -82,4 +88,40 @@ class PathBuilder:
         self.makeExist(path)
         return path
 
+# figures out what language a file is
+class LangDecider:
+    NONE = 'none'
+    CXX = 'cxx'
+    JAVA = 'java'
+    HXX = 'hxx'
+
+    def __init__(self, c_suff, h_suff, java_suff):
+        self.cSuff = c_suff
+        self.hSuff = h_suff
+        self.jSuff = j_suff
+
+    def getLang(self, path):
+        if path.endswith(self.cSuff):
+            return LangDecider.CXX
+        if path.endswith(self.cSuff):
+            return LangDecider.CXX
+        if path.endswith(self.cSuff):
+            return LangDecider.CXX
+        return LangDecider.NONE
+
+    def isCode(self, path):
+        if (path.endswith(self.cSuff) or
+                path.endswith(self.hSuff) or
+                path.endswith(self.jSuff)):
+            return True
+        return False
+
+    def getSuffixFor(self, lang):
+        if lang == LangDecider.CXX:
+            return self.cSuff
+        if lang == LangDecider.HXX:
+            return self.hSuff
+        if lang == LangDecider.JAVA:
+            return self.jSuff
+        return '.none'
 
