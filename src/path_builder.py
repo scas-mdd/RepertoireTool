@@ -4,6 +4,8 @@ import shutil
 class PathBuilder:
     PROJ0 = 'proj0'
     PROJ1 = 'proj1'
+    Proj0 = PROJ0
+    Proj1 = PROJ1
 
     # pass in a path to a directoy we have all to ourselves
     def __init__(self, root, force_clean = False):
@@ -81,7 +83,8 @@ class PathBuilder:
         for f in os.listdir(path):
             if f.startswith(name):
                 return f
-        raise Exception("Couldn't find prep file for diff with name: {0}".format(name))
+        raise Exception(
+                "Couldn't find prep file for diff with name: {0}".format(name))
 
     def getRepertoireOutputPath(self, lang, is_new):
         path = self.root + os.sep + 'repertoire' + os.sep
@@ -95,7 +98,11 @@ class LangDecider:
     JAVA = 'java'
     HXX = 'hxx'
 
-    def __init__(self, c_suff, h_suff, java_suff):
+    CXX_SUFF = '.' + CXX
+    HXX_SUFF = '.' + HXX
+    JAVA_SUFF = '.' + JAVA
+
+    def __init__(self, c_suff, h_suff, j_suff):
         self.cSuff = c_suff
         self.hSuff = h_suff
         self.jSuff = j_suff
@@ -125,3 +132,5 @@ class LangDecider:
             return self.jSuff
         return '.none'
 
+    def getSuffix(self):
+        return (self.cSuff, self.hSuff, self.jSuff)
