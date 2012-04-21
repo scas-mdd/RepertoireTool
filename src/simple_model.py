@@ -56,7 +56,6 @@ class SimpleModel:
             return False
         if (not self.projs[proj] or
                 self.projs[proj].getVcsType() != VcsTypes.Git):
-            print 'reseting vcs for ' + proj
             self.projs[proj] = GitInterface(proj)
         return True
 
@@ -107,7 +106,11 @@ class SimpleModel:
         return self.projs[proj].getVcsSuffix()
 
     def getVcsTimeWindow(self, proj):
-        return (None, None)
+        if proj != PathBuilder.PROJ0 and proj != PathBuilder.PROJ1:
+            return None
+        if not self.projs[proj]:
+            return None
+        return self.projs[proj].getVcsWhen()
 
     def getVcsWhich(self, proj):
         if proj != PathBuilder.PROJ0 and proj != PathBuilder.PROJ1:

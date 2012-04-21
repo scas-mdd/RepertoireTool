@@ -1,5 +1,6 @@
 GUI_FILES= \
 		ui/page_ccfx.ui  \
+		ui/page_confirm.ui  \
 		ui/page_projdir.ui   \
 		ui/page_vcs_suffix.ui \
 		ui/page_vcs_when.ui \

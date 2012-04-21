@@ -6,6 +6,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QWizardPage, QWizard, QApplication
 from PyQt4.QtCore import QDate
 from ui.page_projdir import Ui_ProjDirPage
+from ui.page_confirm import Ui_ConfirmPage
 from ui.page_ccfx import Ui_CcfxPage
 from ui.page_vcs_suffix import Ui_VcsSuffixPage
 from ui.page_vcs_when import Ui_VcsWhenPage
@@ -195,6 +196,24 @@ class VcsWhichPage(QWizardPage):
             return self.model.setVcsWhich(self.proj, VcsTypes.Svn)
         return False
 
+class ConfirmPage(QWizardPage):
+    def __init__(self, model, ui, parent=None):
+        QWizardPage.__init__(self, parent)
+        self.ui = ui
+        self.model = model
+
+    def postSetup(self):
+        pass
+
+    def initializePage(self):
+        self.ui.errorLabel_confirm.setVisible(False)
+
+    def validatePage(self):
+        if self.model.isComplete():
+            return True
+        self.ui.errorLabel_confirm.setVisible(True)
+        return False
+
 class WorkingPage(QWizardPage):
     def __init__(self, model, ui, parent=None):
         QWizardPage.__init__(self, parent)
@@ -285,8 +304,15 @@ class VcsWizard(QWizard):
         ui.retranslateUi(realPage)
         realPage.postSetup()
         self.addPage(realPage)
-        ui = Ui_WorkingPage()
 
+        ui = Ui_ConfirmPage()
+        realPage = ConfirmPage(self.model, ui, self)
+        ui.setupUi(realPage)
+        ui.retranslateUi(realPage)
+        realPage.postSetup()
+        self.addPage(realPage)
+
+        ui = Ui_WorkingPage()
         realPage = WorkingPage(self.model, ui, self)
         ui.setupUi(realPage)
         ui.retranslateUi(realPage)

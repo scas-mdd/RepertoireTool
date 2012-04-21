@@ -11,6 +11,8 @@ class GitInterface:
         self.proj = proj
         self.langDecider = None
         self.gitPath = ''
+        self.timeBegin = None
+        self.timeEnd = None
 
     @staticmethod
     def VerifyGitRepo(git_path):
@@ -25,6 +27,13 @@ class GitInterface:
             return False
         return True
 
+    def isComplete(self):
+        return (self.gitPath and
+                self.langDecider and
+                self.timeBegin and
+                self.timeEnd
+                )
+
     def getVcsType(self):
         return VcsTypes.Git
 
@@ -38,6 +47,9 @@ class GitInterface:
     def getRepoRoot(self):
         return self.gitPath
 
+    def getVcsWhen(self):
+        return (self.timeBegin, self.timeEnd)
+
     def setSuffixes(self, c_suff, h_suff, j_suff):
         self.langDecider = LangDecider(c_suff, h_suff, j_suff)
         return True
@@ -45,7 +57,6 @@ class GitInterface:
     def setRepoRoot(self, git_path):
         if not GitInterface.VerifyGitRepo(git_path):
             return False
-        print 'set gitPath to {0}'.format(git_path)
         self.gitPath = git_path
         return True
 
