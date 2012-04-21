@@ -4,6 +4,7 @@ from datetime import datetime
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QWizardPage, QWizard, QApplication
+from PyQt4.QtCore import QDate
 from ui.page_projdir import Ui_ProjDirPage
 from ui.page_ccfx import Ui_CcfxPage
 from ui.page_vcs_suffix import Ui_VcsSuffixPage
@@ -116,7 +117,7 @@ class VcsWhenPage(QWizardPage):
         self.model = model
 
     def postSetup(self):
-        pass
+        self.ui.vcsWhenEnd.setDate(QDate.currentDate())
 
     def initializePage(self):
         start, end = self.model.getVcsTimeWindow(self.proj)
