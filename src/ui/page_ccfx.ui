@@ -198,6 +198,11 @@ p, li { white-space: pre-wrap; }
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>ccfxPathLine</tabstop>
+  <tabstop>ccfxPathBtn</tabstop>
+  <tabstop>ccfxTokenCombo</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
