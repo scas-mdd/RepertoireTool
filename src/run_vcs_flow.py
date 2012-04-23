@@ -4,7 +4,7 @@ from datetime import datetime
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QWizardPage, QWizard, QApplication
-from PyQt4.QtCore import QDate
+from PyQt4.QtCore import Qt, QDate, QThread, QObject
 from ui.page_projdir import Ui_ProjDirPage
 from ui.page_confirm import Ui_ConfirmPage
 from ui.page_ccfx import Ui_CcfxPage
@@ -16,6 +16,7 @@ from ui.page_welcome import Ui_WelcomePage
 from ui.page_working import Ui_WorkingPage
 
 from simple_model import SimpleModel
+from simple_driver import SimpleDriver
 from path_builder import PathBuilder
 from vcs_types import VcsTypes
 
@@ -219,9 +220,61 @@ class WorkingPage(QWizardPage):
         QWizardPage.__init__(self, parent)
         self.ui = ui
         self.model = model
+        # this one is a little difference since it has background work logic
+        self.workerThread = QThread()
+        self.workerThread.start()
+        self.driver = SimpleDriver()
+        self.driver.moveToThread(self.workerThread)
+        self.isDone = False
+        QObject.connect(
+                self,
+                QtCore.SIGNAL("startProcessing"),
+                self.driver.process,
+                Qt.QueuedConnection)
+        QObject.connect(
+                self.driver,
+                QtCore.SIGNAL("progress"),
+                self.updateProgress,
+                Qt.QueuedConnection)
+        QObject.connect(
+                self.driver,
+                QtCore.SIGNAL("done"),
+                self.workerDone,
+                Qt.QueuedConnection)
+
+    def workerDone(self, args):
+        msg, success = args
+        if success:
+            self.isDone = True
+            self.ui.progressBar.setValue(100)
+            self.ui.workingLabel.setText(msg)
+        else:
+            msgBox = QtGui.QMessageBox(self)
+            msgBox.setText(msg)
+            msgBox.exec_()
+
+    def updateProgress(self, args):
+        msg, frac = args
+        self.ui.progressBar.setValue(int(frac * 100))
+        self.ui.progressLabel.setText(msg)
 
     def postSetup(self):
+        pass
+
+    def initializePage(self):
         self.ui.workingLabel.setText('')
+        self.ui.progressBar.setValue(0)
+        self.driver.startWorking(lambda :
+                self.emit(QtCore.SIGNAL("startProcessing"), self.model))
+
+    def validatePate(self):
+        return self.isDone
+
+    # called when the use hits back
+    def cleanupPage(self):
+        # this blocks until the driver stops, but is thread safe
+        self.driver.stopWorking()
+
 
 class VcsWizard(QWizard):
     def __init__(self, parent=None):

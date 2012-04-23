@@ -14,10 +14,7 @@ class RepWizard(QtGui.QWizard):
         self.ui = Ui_RepWizard()
         self.ui.setupUi(self)
         self.postSetup()
-        self.workerThread = QThread()
-        self.workerThread.start()
         self.workDriver = WorkDriver(self.model)
-        self.workDriver.moveToThread(self.workerThread)
         self.processingDone = False
         QObject.connect(
                 self,
@@ -34,12 +31,6 @@ class RepWizard(QtGui.QWizard):
                 QtCore.SIGNAL("done"),
                 self.workerDone,
                 Qt.QueuedConnection)
-        # this one isn't queued, but the underlying action
-        # is thread safe (intentionally)
-        QObject.connect(
-                self.button(QtGui.QWizard.BackButton),
-                QtCore.SIGNAL("clicked()"),
-                self.workDriver.notifyStop)
 
     def postSetup(self):
         self.page(0).validatePage = self.validatePage0
