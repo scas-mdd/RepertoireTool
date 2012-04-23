@@ -14,6 +14,7 @@ from ui.page_vcs_where import Ui_VcsWherePage
 from ui.page_vcs_which import Ui_VcsWhichPage
 from ui.page_welcome import Ui_WelcomePage
 from ui.page_working import Ui_WorkingPage
+from ui.page_final import Ui_FinalPage
 
 from simple_model import SimpleModel
 from simple_driver import SimpleDriver
@@ -243,12 +244,14 @@ class WorkingPage(QWizardPage):
                 Qt.QueuedConnection)
 
     def workerDone(self, args):
-        msg, success = args
-        if success:
+        msg, finished_successfully = args
+        print 'worker finished: ' + str(finished_successfully) + ' ' + msg
+        if finished_successfully:
             self.isDone = True
             self.ui.progressBar.setValue(100)
             self.ui.workingLabel.setText(msg)
         else:
+            self.isDone = False
             msgBox = QtGui.QMessageBox(self)
             msgBox.setText(msg)
             msgBox.exec_()
@@ -256,25 +259,39 @@ class WorkingPage(QWizardPage):
     def updateProgress(self, args):
         msg, frac = args
         self.ui.progressBar.setValue(int(frac * 100))
-        self.ui.progressLabel.setText(msg)
+        self.ui.workingLabel.setText(msg)
 
     def postSetup(self):
         pass
 
     def initializePage(self):
+        self.isDone = False
         self.ui.workingLabel.setText('')
         self.ui.progressBar.setValue(0)
+        print 'worker starting'
         self.driver.startWorking(lambda :
                 self.emit(QtCore.SIGNAL("startProcessing"), self.model))
 
-    def validatePate(self):
+    def validatePage(self):
         return self.isDone
 
     # called when the use hits back
     def cleanupPage(self):
+        print 'cleaning up '
         # this blocks until the driver stops, but is thread safe
         self.driver.stopWorking()
 
+class FinalPage(QWizardPage):
+    def __init__(self, model, ui, parent=None):
+        QWizardPage.__init__(self, parent)
+        self.ui = ui
+        self.model = model
+
+    def postSetup(self):
+        pass
+
+    def validatePage(self):
+        return True
 
 class VcsWizard(QWizard):
     def __init__(self, parent=None):
@@ -372,6 +389,13 @@ class VcsWizard(QWizard):
         realPage.postSetup()
         self.addPage(realPage)
 
+        ui = Ui_FinalPage()
+        realPage = FinalPage(self.model, ui, self)
+        ui.setupUi(realPage)
+        ui.retranslateUi(realPage)
+        realPage.postSetup()
+        self.addPage(realPage)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     v = VcsWizard()
@@ -381,8 +405,10 @@ if __name__ == "__main__":
         v.model.setCcfxTokenSize(40)
         v.model.setVcsWhich(PathBuilder.Proj0, VcsTypes.Git)
         v.model.setVcsWhere(PathBuilder.Proj0, '/home/wiley/ws/opensource/cinnamon')
+        v.model.setVcsWhen(PathBuilder.Proj0, datetime(2011, 12, 12), datetime(2012, 12, 1))
         v.model.setVcsSuffix(PathBuilder.Proj0, '.c', '.h', '.java')
         v.model.setVcsWhich(PathBuilder.Proj1, VcsTypes.Git)
+        v.model.setVcsWhen(PathBuilder.Proj1, datetime(2011, 12, 12), datetime(2012, 12, 1))
         v.model.setVcsWhere(PathBuilder.Proj1, '/home/wiley/ws/opensource/gnome-shell')
         v.model.setVcsSuffix(PathBuilder.Proj1, '.c', '.h', '.java')
     v.show()

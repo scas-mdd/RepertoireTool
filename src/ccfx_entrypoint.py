@@ -1,13 +1,25 @@
 import config
 import os
 from subprocess import Popen, PIPE
+from path_builder import PathBuilder
 
 class CCFXEntryPoint:
-    def __init__(self, ccfx_path = './ccfx', token_sz = 40, file_sep = True, grp_sep = True):
+    def __init__(self, path_builder, ccfx_path = './ccfx', token_sz = 40, file_sep = True, grp_sep = True):
         self.ccfxPath = ccfx_path
         self.tokenSize = token_sz
         self.fileSep = file_sep
         self.grpSep = grp_sep
+        self.pb = path_builder
+
+    def processPairs(self, lang, is_new):
+        clone_path = self.pb.getCCFXOutputPath()
+        path0 = self.pb.getCCFXInputPath(PathBuilder.PROJ0, lang, is_new)
+        path1 = self.pb.getCCFXInputPath(PathBuilder.PROJ1, lang, is_new)
+        tmp_out = clone_path + self.pb.getCCFXOutputFileName(
+                lang, is_new, is_tmp = True)
+        out = clone_path + self.pb.getCCFXOutputFileName(
+                lang, is_new, is_tmp = False)
+        return self.processPair(path0, path1, tmp_out, out, lang)
 
     def processPair(self, dir0, dir1, tmp_out_path, out_path, lang = 'java'):
         worked = True

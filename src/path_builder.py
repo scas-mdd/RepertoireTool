@@ -1,6 +1,8 @@
 import os
 import shutil
 
+from difffilter import DiffFilter
+
 class PathBuilder:
     PROJ0 = 'proj0'
     PROJ1 = 'proj1'
@@ -106,14 +108,19 @@ class LangDecider:
         self.cSuff = c_suff
         self.hSuff = h_suff
         self.jSuff = j_suff
+        self.filters = {
+                'java' : DiffFilter(j_suff),
+                'cxx'  : DiffFilter(c_suff),
+                'hxx'  : DiffFilter(h_suff)
+                }
 
     def getLang(self, path):
         if path.endswith(self.cSuff):
             return LangDecider.CXX
-        if path.endswith(self.cSuff):
-            return LangDecider.CXX
-        if path.endswith(self.cSuff):
-            return LangDecider.CXX
+        if path.endswith(self.hSuff):
+            return LangDecider.HXX
+        if path.endswith(self.jSuff):
+            return LangDecider.JAVA
         return LangDecider.NONE
 
     def isCode(self, path):
@@ -125,12 +132,16 @@ class LangDecider:
 
     def getSuffixFor(self, lang):
         if lang == LangDecider.CXX:
-            return self.cSuff
+            return LangDecider.CXX_SUFF
         if lang == LangDecider.HXX:
-            return self.hSuff
+            return LangDecider.HXX_SUFF
         if lang == LangDecider.JAVA:
-            return self.jSuff
+            return LangDecider.JAVA_SUFF
         return '.none'
 
     def getSuffix(self):
         return (self.cSuff, self.hSuff, self.jSuff)
+
+
+    def getFilter(self, lang):
+        return self.filters[lang]

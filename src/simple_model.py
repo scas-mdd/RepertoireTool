@@ -11,6 +11,7 @@ class SimpleModel:
         self.ccfxPath = ''
         self.ccfxTokenSize = 40
         self.projs = {PathBuilder.Proj0 : None, PathBuilder.Proj1 : None}
+        self.pb = None
 
     @staticmethod
     def ValidateProjDir(path):
@@ -34,9 +35,13 @@ class SimpleModel:
     def setProjDir(self, path):
         if not SimpleModel.ValidateProjDir(path):
             return False
+        if self.getProjDir() == path:
+            # we've already set up this directory
+            return True
         uniq = 'repertoire_tmp_' + str(int(os.times()[4] * 100))
         self.projDir = path + os.sep + uniq
         os.mkdir(self.projDir)
+        self.pb = PathBuilder(self.projDir)
         return True
 
     def setCcfxPath(self, path):
@@ -56,7 +61,7 @@ class SimpleModel:
             return False
         if (not self.projs[proj] or
                 self.projs[proj].getVcsType() != VcsTypes.Git):
-            self.projs[proj] = GitInterface(proj)
+            self.projs[proj] = GitInterface(proj, self.pb)
         return True
 
     def setVcsWhere(self, proj, path):
@@ -90,6 +95,7 @@ class SimpleModel:
                 )
 
     def getProjDir(self):
+        # this is gross because we create a unique directory inside projdir
         return os.path.abspath(os.path.join(self.projDir, os.path.pardir))
 
     def getCcfxPath(self):
@@ -107,9 +113,9 @@ class SimpleModel:
 
     def getVcsTimeWindow(self, proj):
         if proj != PathBuilder.PROJ0 and proj != PathBuilder.PROJ1:
-            return None
+            return None, None
         if not self.projs[proj]:
-            return None
+            return None, None
         return self.projs[proj].getVcsWhen()
 
     def getVcsWhich(self, proj):
@@ -125,5 +131,11 @@ class SimpleModel:
         if not self.projs[proj]:
             return None
         return self.projs[proj].getRepoRoot()
+
+    def getProj(self, proj):
+        return self.projs[proj]
+
+    def getPathBuilder(self):
+        return self.pb
 
 

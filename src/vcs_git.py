@@ -1,14 +1,15 @@
 import os
 import subprocess
-import dateutil.parser
+from datetime import datetime
 
-from path_builder import LangDecider
+from path_builder import LangDecider, PathBuilder
 from vcs_types import Commit
 from vcs_types import VcsTypes
 
 class GitInterface:
-    def __init__(self, proj):
+    def __init__(self, proj, path_builder):
         self.proj = proj
+        self.pb = path_builder
         self.langDecider = None
         self.gitPath = ''
         self.timeBegin = None
@@ -67,7 +68,6 @@ class GitInterface:
 
     # build up self.commits, an array of Commits
     def load(self):
-        devnull = open(os.devnull, 'w')
         self.commits = []
 
         # grab the dates, authors, and hashes out of the log
@@ -75,20 +75,20 @@ class GitInterface:
                 'git log --format=" %cn %n %ci %n %H"',
                 shell=True,
                 cwd=self.gitPath,
-                stdout=subprocess.PIPE,
-                stderr=devnull
-                )
+                stdout=subprocess.PIPE)
+
         line = log_process.stdout.readline()
         while line:
-            d = Commit(Commit.GIT)
-            d.author = line.strip()
-            d.date = dateutil.parser.parser(
-                    log_process.stdout.readline().strip())
-            d.id = log_process.stdout.readline().strip()
+            c = Commit(VcsTypes.Git)
+            c.author = line.strip()
+            date_line = log_process.stdout.readline().strip()
+            c.date = datetime.strptime(
+                    date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M:%S" )
+            c.id = log_process.stdout.readline().strip()
             line = log_process.stdout.readline()
-            if d.date >= self.timeBegin and d.date <= self.timeEnd:
-                self.commits.append(d)
-
+            if c.date >= self.timeBegin and c.date <= self.timeEnd:
+                self.commits.append(c)
+        log_process.kill()
 
         # now grab the files for each of those commits
         get_files_cmd = 'git show --pretty="format:" --name-only {0}'
@@ -98,43 +98,51 @@ class GitInterface:
                     cmd_inst,
                     shell=True,
                     cwd=self.gitPath,
-                    stdout=subprocess.PIPE,
-                    stderr=devnull
-                    )
-            line = process.stdout.readline()
-            while line:
-                line = line.strip()
-                if len(line) > 0 and self.langDecider.isCode(line):
+                    stdout=subprocess.PIPE)
+            raw_line = 'dummy'
+            while raw_line:
+                raw_line = process.stdout.readline()
+                line = raw_line.strip()
+                if line and self.langDecider.isCode(line):
                     d.files.append(line)
-                line = process.stdout.readline()
-
+            process.kill()
         idx = 0
         while idx < len(self.commits):
             if len(self.commits[idx].files) < 1:
                 # like a remove, but so much faster
                 self.commits[idx] = self.commits[len(self.commits) - 1]
+                self.commits.pop()
             else:
                 idx += 1
-        devnull.close()
 
     def dumpCommits(self):
         files_seen = 0
         dmp_cmd = 'git show {0} -- {1}'
-        devnull = open(os.devnull, 'w')
         for c in self.commits:
             for f in c.files:
                 lang = self.langDecider.getLang(f)
-                suff = self.langDescider.getSuffixFor(lang)
-                path = self.pb.getDiffPath(self.proj, lang)
-                path = path + ("%09d" % files_seen) + suff
+                suff = self.langDecider.getSuffixFor(lang)
+                # why? because we've already filtered these diffs implicitly
+                path = (self.pb.getFilterOutputPath(self.proj, lang) +
+                        ("%09d" % files_seen) +
+                        suff)
                 files_seen += 1
                 diff_file = open(path, 'w')
                 log_process = subprocess.Popen(
                         dmp_cmd.format(c.id, f),
                         shell=True,
                         cwd=self.gitPath,
-                        stdout=diff_file,
-                        stderr=devnull
-                        ).wait()
-        devnull.close()
+                        stdout=diff_file).wait()
+                diff_file.close()
 
+    def getLangDecider(self):
+        return self.langDecider
+
+
+def runTest():
+    pb = PathBuilder('/home/wiley/tmp')
+    g = GitInterface(PathBuilder.Proj0, pb)
+    print str(g.setSuffixes('.c', '.h', '.java'))
+    print str(g.setRepoRoot('/home/wiley/ws/opensource/cinnamon'))
+    print str(g.setTimeWindow(datetime(1970, 1, 1), datetime(2020, 1, 1)))
+    g.load()
