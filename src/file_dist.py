@@ -5,7 +5,7 @@ import csv
 
 import config
 from output_parser import RepertoireOutput
-from scatter_hist import histogram
+from scatter_plot import scatterPlot
 
 
 class DiffToFileMapping:
@@ -63,12 +63,35 @@ def file_dist(rep_out_path, conv_dir1, conv_dir2):
         src_file1 = convDir1.diff2file.get((diff_file1,start1), -1)
         src_file2 = convDir2.diff2file.get((diff_file2,start2), -1)
 
-        key = (src_file1,src_file2)
+        #taking directory upto depth 3
+        if src_file1 == -1 or src_file2 == -1:
+            continue
+
+        temp_name = src_file1.split("_")
+        src_dir1 = temp_name[0] + os.sep + temp_name[1] + os.sep + temp_name[2]
+
+        temp_name = src_file2.split("_")
+        src_dir2 = temp_name[0] + os.sep + temp_name[1] + os.sep + temp_name[2]
+
+#        key = (src_file1,src_file2)
+        key = (src_dir1,src_dir2)
         if (fileDist.has_key(key) == 0):
             fileDist[key] = 0
         fileDist[key] += 1
 
     return fileDist
+
+def gen_scatter_plot(filedist_hash):
+
+    myPlot = scatterPlot()
+
+    for key, value in sorted(filedist_hash.iteritems(), key=lambda (k,v): (v,k)):
+        file1,file2 = key
+        myPlot.set_value(file1,file2,value)
+
+    myPlot.draw()
+
+
 
 #---------------testing-----------------#
 
@@ -86,11 +109,6 @@ if __name__ == "__main__":
     conv_dir2 = sys.argv[3]
     dist_file = sys.argv[4]
 
-    fileDistSet = file_dist(rep_out, conv_dir1, conv_dir2)
-    print fileDistSet
-#    for item in fileDistSet:
-#        print item
-#    hist = histogram()
-#    hist.set_value(fileDistSet)
-#    hist.drawHist()
+    fileDist = file_dist(rep_out, conv_dir1, conv_dir2)
+    gen_scatter_plot(fileDist)
 
