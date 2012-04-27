@@ -1,4 +1,5 @@
 class VcsTypes:
+    NoType = 0
     Git = 1
     Svn = 2
     Hg  = 3

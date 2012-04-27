@@ -3,68 +3,34 @@ import subprocess
 from datetime import datetime
 
 from path_builder import LangDecider, PathBuilder
-from vcs_types import Commit
-from vcs_types import VcsTypes
+from vcs_types import Commit, VcsTypes
+from vcs_interface import VcsInterface
 
-class GitInterface:
+class GitInterface(VcsInterface):
     def __init__(self, proj, path_builder):
-        self.proj = proj
-        self.pb = path_builder
-        self.langDecider = None
-        self.gitPath = ''
-        self.timeBegin = None
-        self.timeEnd = None
+        VcsInterface.__init__(self, proj, path_builder)
+        self.commits = []
 
     @staticmethod
     def VerifyGitRepo(git_path):
         if not os.path.isdir(git_path):
             return False
-        git_exists = subprocess.Popen(
-                'git version',
+        # this actually prints the directory of the root of the process
+        # but i'm not going to check it
+        process = subprocess.Popen(
+                'git rev-parse --show-toplevel',
                 shell=True,
                 cwd=git_path,
-                ).wait() == 0
-        if not git_exists:
+                )
+        if not process.wait() == 0:
             return False
         return True
-
-    def isComplete(self):
-        return (self.gitPath and
-                self.langDecider and
-                self.timeBegin and
-                self.timeEnd
-                )
 
     def getVcsType(self):
         return VcsTypes.Git
 
-    def getVcsSuffix(self):
-        if not self.langDecider:
-            return (LangDecider.CXX_SUFF,
-                    LangDecider.HXX_SUFF,
-                    LangDecider.JAVA_SUFF)
-        return self.langDecider.getSuffix()
-
-    def getRepoRoot(self):
-        return self.gitPath
-
-    def getVcsWhen(self):
-        return (self.timeBegin, self.timeEnd)
-
-    def setSuffixes(self, c_suff, h_suff, j_suff):
-        self.langDecider = LangDecider(c_suff, h_suff, j_suff)
-        return True
-
-    def setRepoRoot(self, git_path):
-        if not GitInterface.VerifyGitRepo(git_path):
-            return False
-        self.gitPath = git_path
-        return True
-
-    def setTimeWindow(self, earliest_time, latest_time):
-        self.timeBegin = earliest_time
-        self.timeEnd = latest_time
-        return True
+    def verifyRepoPath(self, path):
+        return GitInterface.VerifyGitRepo(path)
 
     # build up self.commits, an array of Commits
     def load(self):
@@ -74,7 +40,7 @@ class GitInterface:
         log_process = subprocess.Popen(
                 'git log --format=" %cn %n %ci %n %H"',
                 shell=True,
-                cwd=self.gitPath,
+                cwd=self.repoPath,
                 stdout=subprocess.PIPE)
 
         line = log_process.stdout.readline()
@@ -97,7 +63,7 @@ class GitInterface:
             process = subprocess.Popen(
                     cmd_inst,
                     shell=True,
-                    cwd=self.gitPath,
+                    cwd=self.repoPath,
                     stdout=subprocess.PIPE)
             raw_line = 'dummy'
             while raw_line:
@@ -117,7 +83,7 @@ class GitInterface:
 
     def dumpCommits(self):
         files_seen = 0
-        dmp_cmd = 'git show {0} -- {1}'
+        dmp_cmd = 'git show -U5 {0} -- {1}'
         for c in self.commits:
             for f in c.files:
                 lang = self.langDecider.getLang(f)
@@ -131,13 +97,9 @@ class GitInterface:
                 log_process = subprocess.Popen(
                         dmp_cmd.format(c.id, f),
                         shell=True,
-                        cwd=self.gitPath,
+                        cwd=self.repoPath,
                         stdout=diff_file).wait()
                 diff_file.close()
-
-    def getLangDecider(self):
-        return self.langDecider
-
 
 def runTest():
     pb = PathBuilder('/home/wiley/tmp')
