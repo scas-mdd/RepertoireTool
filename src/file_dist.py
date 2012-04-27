@@ -77,7 +77,10 @@ def file_dist(rep_out_path, conv_dir1, conv_dir2):
         key = (src_dir1,src_dir2)
         if (fileDist.has_key(key) == 0):
             fileDist[key] = 0
-        fileDist[key] += 1
+        m = metric.partition(':')[0]
+        m = m.lstrip('(')
+
+        fileDist[key] += int(m)
 
     return fileDist
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -29,13 +30,21 @@ class scatterPlot:
             self.color_map.append(value)
 
 
-    def draw(self):
+    def draw(self,figSize=10,markerSize=50):
         X = self.x.data
         Y = self.y.data
 
-        plt.scatter(X,Y,c=self.color_map)
+        fig = plt.figure(1, figsize=(figSize,figSize))
+        fig.suptitle('A Bird\'s eye view', fontsize=12)
+
+        plt.scatter(X,Y,c=self.color_map,s=markerSize,marker='o')
         plt.xticks(range(len(X)),self.x.label,size='small')
         plt.yticks(range(len(Y)),self.y.label,size='small')
+        plt.xlim(-1,len(self.x.label))
+        plt.ylim(-1,len(self.y.label))
+        plt.xlabel( "Files from project0" )
+        plt.ylabel( "Files from project1" )
+        plt.grid(True)
 
         plt.show()
 
