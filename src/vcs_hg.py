@@ -58,7 +58,7 @@ class HgInterface(VcsInterface):
             c.id = log_process.stdout.readline().strip()
             files = log_process.stdout.readline().strip().split()
             line = log_process.stdout.readline()
-            if c.date < self.timeBegin and c.date > self.timeEnd:
+            if c.date < self.timeBegin or c.date > self.timeEnd:
                 continue
             i = 0
             while i < len(files):
