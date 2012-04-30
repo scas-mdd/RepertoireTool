@@ -1,0 +1,3 @@
+*.pyc
+src/ui/*.py
+src/repertoire_tmp_*/

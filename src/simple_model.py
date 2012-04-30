@@ -3,6 +3,7 @@ import subprocess
 
 from path_builder import PathBuilder
 from vcs_git import GitInterface
+from vcs_hg import HgInterface
 from vcs_types import VcsTypes
 
 class SimpleModel:
@@ -57,11 +58,16 @@ class SimpleModel:
     def setVcsWhich(self, proj, which_vcs = VcsTypes.Git):
         if proj != PathBuilder.PROJ0 and proj != PathBuilder.PROJ1:
             return False
-        if which_vcs != VcsTypes.Git:
+        if which_vcs == VcsTypes.Git:
+            vcs = GitInterface(proj, self.pb)
+        elif which_vcs == VcsTypes.Hg:
+            vcs = HgInterface(proj, self.pb)
+        else:
             return False
+
         if (not self.projs[proj] or
-                self.projs[proj].getVcsType() != VcsTypes.Git):
-            self.projs[proj] = GitInterface(proj, self.pb)
+                self.projs[proj].getVcsType() != which_vcs):
+            self.projs[proj] = vcs
         return True
 
     def setVcsWhere(self, proj, path):

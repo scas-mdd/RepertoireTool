@@ -1,5 +1,12 @@
+import os
+import subprocess
 
+from datetime import datetime
+
+from path_builder import LangDecider, PathBuilder
 from vcs_interface import VcsInterface
+from vcs_types import Commit, VcsTypes
+
 
 class HgInterface(VcsInterface):
     def __init__(self, proj, path_builder):
@@ -47,7 +54,7 @@ class HgInterface(VcsInterface):
             author = line.strip()
             date_line = log_process.stdout.readline().strip()
             c.date = datetime.strptime(
-                    date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M:%S" )
+                    date_line[0:len(date_line) - 6], "%a %b %d %H:%M:%S %Y" )
             c.id = log_process.stdout.readline().strip()
             files = log_process.stdout.readline().strip().split()
             line = log_process.stdout.readline()
@@ -55,7 +62,7 @@ class HgInterface(VcsInterface):
                 continue
             i = 0
             while i < len(files):
-                if not f or not self.langDecider.isCode(f)
+                if not files[i] or not self.langDecider.isCode(files[i]):
                     files[i] = files[-1]
                     files.pop()
                 else:
