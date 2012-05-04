@@ -43,8 +43,7 @@ class HgInterface(VcsInterface):
 
         # grab the authors, dates, hashes, and files out of the log
         log_process = subprocess.Popen(
-                'hg log --template="{author|user}\n{rfc822date|date}\n' +
-                '{node|short}\n{files}\n"',
+                'hg log --template="{author|user}\n{date|isodate}\n{node|short}\n{files}\n"',
                 shell=True,
                 cwd=self.repoPath,
                 stdout=subprocess.PIPE)
@@ -54,7 +53,7 @@ class HgInterface(VcsInterface):
             author = line.strip()
             date_line = log_process.stdout.readline().strip()
             c.date = datetime.strptime(
-                    date_line[0:len(date_line) - 6], "%a %b %d %H:%M:%S %Y" )
+                    date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M" )
             c.id = log_process.stdout.readline().strip()
             files = log_process.stdout.readline().strip().split()
             line = log_process.stdout.readline()

@@ -5,9 +5,10 @@ from threading import Condition
 from threading import Lock
 import time
 
-from path_builder import PathBuilder, LangDecider
-from ccfx_input_conv import CCFXInputConverter
 from ccfx_entrypoint import CCFXEntryPoint
+from ccfx_input_conv import CCFXInputConverter
+from ccfx_output_conv import convert_ccfx_output
+from path_builder import PathBuilder, LangDecider
 
 class StartStopSync:
     def __init__(self):
@@ -98,10 +99,10 @@ class SimpleDriver(QObject):
                         step / total_steps)
                 step += 1
                 proj0.dumpCommits()
-                step += 1
             elif step == 3:
                 self.progress("Dumping commits for second project",
                         step / total_steps)
+                step += 1
                 proj1.dumpCommits()
             elif step == 4:
                 self.progress("Converting diffs to ccfx compatible format for first project",
@@ -116,85 +117,97 @@ class SimpleDriver(QObject):
                 self.progress("Running ccFinder for old C, this will take quite some time...",
                         step / total_steps)
                 step += 1
-                ccfx.processPairs(LangDecider.CXX, False)
+                have_old_c = ccfx.processPairs(LangDecider.CXX, False)
             elif step == 7:
                 self.progress("Running ccFinder for new C, this will take quite some time...",
                         step / total_steps)
                 step += 1
-                ccfx.processPairs(LangDecider.CXX, True)
+                have_new_c = ccfx.processPairs(LangDecider.CXX, True)
             elif step == 8:
                 self.progress("Running ccFinder for old headers, this will take quite some time...",
                         step / total_steps)
                 step += 1
-                ccfx.processPairs(LangDecider.HXX, False)
+                have_old_h = ccfx.processPairs(LangDecider.HXX, False)
             elif step == 9:
                 self.progress("Running ccFinder for new headers, this will take quite some time...",
                         step / total_steps)
                 step += 1
-                ccfx.processPairs(LangDecider.HXX, True)
+                have_new_h = ccfx.processPairs(LangDecider.HXX, True)
             elif step == 10:
                 self.progress("Running ccFinder for old Java, this will take quite some time...",
                         step / total_steps)
                 step += 1
-                ccfx.processPairs(LangDecider.JAVA, False)
+                have_old_j = ccfx.processPairs(LangDecider.JAVA, False)
             elif step == 11:
                 self.progress("Running ccFinder for new Java, this will take quite some time...",
                         step / total_steps)
                 step += 1
-                ccfx.processPairs(LangDecider.JAVA, True)
+                have_new_j = ccfx.processPairs(LangDecider.JAVA, True)
             elif step == 12:
                 self.progress("Filtering ccFinder old C output based on operation...",
                         step / total_steps)
                 step += 1
+                if not have_old_c:
+                    continue
                 is_new = False
                 lang = LangDecider.CXX
-                output = convert_ccfx_output(self.pb, lang, is_new)
-                rep_out_path = self.pb.getRepertoireOutputPath(lang, is_new)
+                output = convert_ccfx_output(path_builder, lang, is_new)
+                rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
                 output.writeToFile(rep_out_path + lang + '_old.txt')
             elif step == 13:
                 self.progress("Filtering ccFinder new C output based on operation...",
                         step / total_steps)
                 step += 1
+                if not have_new_c:
+                    continue
                 is_new = True
                 lang = LangDecider.CXX
-                output = convert_ccfx_output(self.pb, lang, is_new)
-                rep_out_path = self.pb.getRepertoireOutputPath(lang, is_new)
+                output = convert_ccfx_output(path_builder, lang, is_new)
+                rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
                 output.writeToFile(rep_out_path + lang + '_new.txt')
             elif step == 14:
                 self.progress("Filtering ccFinder old header output based on operation...",
                         step / total_steps)
                 step += 1
+                if not have_old_h:
+                    continue
                 is_new = False
                 lang = LangDecider.HXX
-                output = convert_ccfx_output(self.pb, lang, is_new)
-                rep_out_path = self.pb.getRepertoireOutputPath(lang, is_new)
+                output = convert_ccfx_output(path_builder, lang, is_new)
+                rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
                 output.writeToFile(rep_out_path + lang + '_old.txt')
             elif step == 15:
                 self.progress("Filtering ccFinder new header output based on operation...",
                         step / total_steps)
                 step += 1
+                if not have_new_h:
+                    continue
                 is_new = True
                 lang = LangDecider.HXX
-                output = convert_ccfx_output(self.pb, lang, is_new)
-                rep_out_path = self.pb.getRepertoireOutputPath(lang, is_new)
+                output = convert_ccfx_output(path_builder, lang, is_new)
+                rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
                 output.writeToFile(rep_out_path + lang + '_new.txt')
             elif step == 16:
                 self.progress("Filtering ccFinder old java output based on operation...",
                         step / total_steps)
                 step += 1
+                if not have_old_j:
+                    continue
                 is_new = False
                 lang = LangDecider.JAVA
-                output = convert_ccfx_output(self.pb, lang, is_new)
-                rep_out_path = self.pb.getRepertoireOutputPath(lang, is_new)
+                output = convert_ccfx_output(path_builder, lang, is_new)
+                rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
                 output.writeToFile(rep_out_path + lang + '_old.txt')
             elif step == 17:
                 self.progress("Filtering ccFinder new java output based on operation...",
                         step / total_steps)
                 step += 1
+                if not have_new_j:
+                    continue
                 is_new = True
                 lang = LangDecider.JAVA
-                output = convert_ccfx_output(self.pb, lang, is_new)
-                rep_out_path = self.pb.getRepertoireOutputPath(lang, is_new)
+                output = convert_ccfx_output(path_builder, lang, is_new)
+                rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
                 output.writeToFile(rep_out_path + lang + '_new.txt')
             else:
                 final_status = True

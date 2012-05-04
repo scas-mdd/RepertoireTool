@@ -22,7 +22,6 @@ class CCFXEntryPoint:
         return self.processPair(path0, path1, tmp_out, out, lang)
 
     def processPair(self, dir0, dir1, tmp_out_path, out_path, lang = 'java'):
-        worked = True
         if lang != 'java':
             lang = 'cpp'
 
@@ -49,37 +48,29 @@ class CCFXEntryPoint:
                 self.tokenSize,
                 tmp_out_path))
 
-        print "CCFX: generating " + os.path.basename(tmp_out_path)
         if config.DEBUG is True:
             print cmd_str
 
-#        worked = 0 == os.system(cmd_str)
         proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
         proc.wait()
         if proc.returncode != 0:
             print "Couldn't run %s successfully" % (cmd_str)
             print "error code = " + str(proc.returncode)
             return False
-        else:
-            print "Success!!"
 
         conv_str = '{0} p {1} > {2}'.format(self.ccfxPath, tmp_out_path, out_path)
 
-        print "CCFX: generating " + os.path.basename(out_path)
         if config.DEBUG is True:
             print conv_str
-#        worked = worked and (0 == os.system(conv_str))
         proc = Popen(conv_str,shell=True,stdout=PIPE,stderr=PIPE)
         proc.wait()
         if proc.returncode != 0:
             print "Couldn't run %s successfully" % (cmd_str)
             print "error code = " + str(proc.returncode)
             return False
-        else:
-            print "Success!!"
 
 
-        return worked
+        return True
 
 
 #./ccfx d cpp -v -dn ~/project-bray/BSD/NetBsd/ccFinderInputFiles_new  -is -dn ~/project-bray/BSD/FreeBsd/ccFinderInputFiles_new -w f-w-g+ -b 70 -o net_free_new_70.ccfxd

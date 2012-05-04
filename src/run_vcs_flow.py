@@ -404,13 +404,15 @@ if __name__ == "__main__":
         v.model.setCcfxPath('/home/wiley/ws/ccfxfiles/ubuntu32/ccfx')
         v.model.setCcfxTokenSize(40)
         v.model.setVcsWhich(PathBuilder.Proj0, VcsTypes.Hg)
-        v.model.setVcsWhen(PathBuilder.Proj0, datetime(2012, 1, 20), datetime(2012, 3, 20))
-        v.model.setVcsWhere(PathBuilder.Proj0, '/home/wiley/ws/opensource/xemacs')
-        v.model.setVcsSuffix(PathBuilder.Proj0, '.c', '.h', '.java')
+        # year - month - day
+        v.model.setVcsWhen(PathBuilder.Proj0, datetime(2010, 3, 1), datetime(2011, 4, 1))
+        v.model.setVcsWhere(PathBuilder.Proj0, '/home/wiley/ws/opensource/OOO340')
+        v.model.setVcsSuffix(PathBuilder.Proj0, '.cxx', '.hxx', '.java')
         v.model.setVcsWhich(PathBuilder.Proj1, VcsTypes.Git)
-        v.model.setVcsWhere(PathBuilder.Proj1, '/home/wiley/ws/opensource/emacs')
-        v.model.setVcsWhen(PathBuilder.Proj1, datetime(2012, 1, 20), datetime(2012, 3, 20))
-        v.model.setVcsSuffix(PathBuilder.Proj1, '.c', '.h', '.java')
+        v.model.setVcsWhere(PathBuilder.Proj1, '/home/wiley/ws/opensource/libreoffice')
+        # year - month - day
+        v.model.setVcsWhen(PathBuilder.Proj1, datetime(2010, 3, 1), datetime(2011, 4, 1))
+        v.model.setVcsSuffix(PathBuilder.Proj1, '.cxx', '.hxx', '.java')
     v.show()
     sys.exit(app.exec_())
 

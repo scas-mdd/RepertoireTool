@@ -57,8 +57,10 @@ class GitInterface(VcsInterface):
             c.id = log_process.stdout.readline().strip()
             c.author = log_process.stdout.readline().strip()
             date_line = log_process.stdout.readline().strip()
-            c.date = datetime.strptime(
-                    date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M:%S" )
+            if date_line:
+                last_date = datetime.strptime(
+                        date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M:%S" )
+            c.date = last_date
             line = log_process.stdout.readline()
             files = []
             while line.strip():
@@ -71,7 +73,6 @@ class GitInterface(VcsInterface):
                     c.date <= self.timeEnd and
                     c.date >= self.timeBegin):
                 self.commits.append(c)
-                print c
         log_process.kill()
 
     def dumpCommits(self):

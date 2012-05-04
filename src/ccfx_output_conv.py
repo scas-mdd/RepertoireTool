@@ -137,9 +137,10 @@ def convert_ccfx_output(pb, lang, is_new):
             clone = (clone2, clone1)
         clones[cloneIdx] = clone
 
-    print "<<< output from conversion"
-    print clones
-    print files
+    if config.DEBUG is True:
+        print "<<< output from conversion"
+        print clones
+        print files
     rep_out = RepertoireOutput()
     rep_out.loadFromData(files, clones)
     return rep_out
