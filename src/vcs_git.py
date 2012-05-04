@@ -36,50 +36,43 @@ class GitInterface(VcsInterface):
     def load(self):
         self.commits = []
 
-        # grab the dates, authors, and hashes out of the log
+        # git command produces output like
+        #0992e5111fcac424e3b0e944a077716428ab4f84
+        # Julien Nabet
+        #  2012-04-30 19:50:19 +0200
+        #  M       canvas/source/null/null_canvasfont.cxx
+        #  M       canvas/source/null/null_canvasfont.hxx
+        #  M       canvas/source/null/null_canvashelper.cxx
+        #  M       canvas/source/null/null_canvashelper.hxx
+        #  M       unusedcode.easy
         log_process = subprocess.Popen(
-                'git log --format=" %cn %n %ci %n %H"',
+                'git log --name-status --pretty=format:"%H %n %cn %n %ci"',
                 shell=True,
                 cwd=self.repoPath,
                 stdout=subprocess.PIPE)
 
-        line = log_process.stdout.readline()
+        line = 'dummy'
         while line:
             c = Commit(VcsTypes.Git)
-            c.author = line.strip()
+            c.id = log_process.stdout.readline().strip()
+            c.author = log_process.stdout.readline().strip()
             date_line = log_process.stdout.readline().strip()
             c.date = datetime.strptime(
                     date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M:%S" )
-            c.id = log_process.stdout.readline().strip()
             line = log_process.stdout.readline()
-            if c.date >= self.timeBegin and c.date <= self.timeEnd:
-                self.commits.append(c)
-        log_process.kill()
+            files = []
+            while line.strip():
+                line = line.strip()[2:].strip()
+                if self.langDecider.isCode(line):
+                    c.files.append(line)
+                line = log_process.stdout.readline()
 
-        # now grab the files for each of those commits
-        get_files_cmd = 'git show --pretty="format:" --name-only {0}'
-        for d in self.commits:
-            cmd_inst = get_files_cmd.format(d.id)
-            process = subprocess.Popen(
-                    cmd_inst,
-                    shell=True,
-                    cwd=self.repoPath,
-                    stdout=subprocess.PIPE)
-            raw_line = 'dummy'
-            while raw_line:
-                raw_line = process.stdout.readline()
-                line = raw_line.strip()
-                if line and self.langDecider.isCode(line):
-                    d.files.append(line)
-            process.kill()
-        idx = 0
-        while idx < len(self.commits):
-            if len(self.commits[idx].files) < 1:
-                # like a remove, but so much faster
-                self.commits[idx] = self.commits[len(self.commits) - 1]
-                self.commits.pop()
-            else:
-                idx += 1
+            if (len(c.files) > 0 and
+                    c.date <= self.timeEnd and
+                    c.date >= self.timeBegin):
+                self.commits.append(c)
+                print c
+        log_process.kill()
 
     def dumpCommits(self):
         files_seen = 0
@@ -101,10 +94,14 @@ class GitInterface(VcsInterface):
                         stdout=diff_file).wait()
                 diff_file.close()
 
-def runTest():
+def runtest():
     pb = PathBuilder('/home/wiley/tmp')
     g = GitInterface(PathBuilder.Proj0, pb)
-    print str(g.setSuffixes('.c', '.h', '.java'))
-    print str(g.setRepoRoot('/home/wiley/ws/opensource/cinnamon'))
-    print str(g.setTimeWindow(datetime(1970, 1, 1), datetime(2020, 1, 1)))
+    print str(g.setSuffixes('.cxx', '.hxx', '.java'))
+    print str(g.setRepoRoot('/home/wiley/ws/opensource/libreoffice'))
+    print str(g.setTimeWindow(datetime(2011, 1, 1), datetime(2012, 1, 1)))
     g.load()
+
+
+if __name__=='__main__':
+    runtest()
