@@ -16,7 +16,7 @@ class CommitMeta:
 		self.commitId = commit_id
 		# files is a mapping from fileId to FileMeta
 		self.files = files
-		# either 0 or 1 (CommitMeta.Proj0 or CommitMeta.Proj1)	
+		# either 0 or 1 (CommitMeta.Proj0 or CommitMeta.Proj1)
 		self.projId = proj_id
 
 class SideOfClone:
@@ -29,12 +29,13 @@ class SideOfClone:
 
 class CloneMeta:
 	# lhs and rhs are SideOfClone's
-	def __init__(self, clone_id, lhs, lhs_commit_id, rhs, rhs_commit_id):
-		self.cloneId = clone_id
-		self.lhs = lhs
-		self.lhsCommitId = lhs_commit_id
-		self.rhs = rhs
-		self.rhsCommitId = rhs_commit_id
+    def __init__(self, clone_id=0, lhs=None, lhs_commit_id=0, rhs=None, rhs_commit_id=0, metric=0):
+        self.cloneId = clone_id
+        self.lhs = lhs
+        self.lhsCommitId = lhs_commit_id
+        self.rhs = rhs
+        self.rhsCommitId = rhs_commit_id
+        self.metric = metric
 
 class RepDB:
 	def __init__(self):
