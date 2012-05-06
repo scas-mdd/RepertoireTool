@@ -5,6 +5,8 @@ from datetime import datetime
 from path_builder import LangDecider, PathBuilder
 from vcs_types import Commit, VcsTypes
 from vcs_interface import VcsInterface
+from thread_pool import ThreadPool
+from multiprocessing.pool import ThreadPool
 
 class GitInterface(VcsInterface):
     def __init__(self, proj, path_builder):
@@ -62,6 +64,8 @@ class GitInterface(VcsInterface):
             hash_line = log_process.stdout.readline()
             author_line = log_process.stdout.readline()
             date_line = log_process.stdout.readline()
+            if not hash_line.strip():
+                break
 
             c.id = hash_line.strip()
             c.author = author_line.strip()
@@ -84,37 +88,30 @@ class GitInterface(VcsInterface):
 
     def dumpCommits(self):
         p = ThreadPool(VcsInterface.NumDumpingThreads)
-        p.map(dump_commit, map(lambda x: (self, x), self.commits))
+        p.map(lambda c: dump_commit((self, c)), self.commits)
 
 def dump_commit(args):
     old_self, c = args
-    dmp_cmd = 'git show -U5 {0} -- {1}'
+    dmp_cmd = 'cd {3} && git show -U5 {0} -- {1} > {2}'
     for f in c.files.keys():
         lang = old_self.langDecider.getLang(f)
         suff = old_self.langDecider.getSuffixFor(lang)
-        # why? because we've already filtered these diffs implicitly
+        # why filtered? because we've already filtered these diffs implicitly
         path = (old_self.pb.getFilterOutputPath(old_self.proj, lang) +
                 ("%09d" % old_self.filesSeen.getInc()) +
                 suff)
-        diff_file = open(path, 'w')
-        log_process = subprocess.Popen(
-                dmp_cmd.format(c.id, f),
-                shell=True,
-                cwd=old_self.repoPath,
-                stdout=diff_file).wait()
-        diff_file.flush()
-        kill_file = False
-        if diff_file.tell() < 1:
-            kill_file = True
-        diff_file.close()
-        if kill_file:
-            os.remove(path)
+        os.system(dmp_cmd.format(c.id, f, path, old_self.repoPath))
+        if not os.path.exists(path):
+            print 'diff for file {0} from commit {1} produced nothing?'.format(
+                    f, c.id)
             c.files.pop(f)
+        elif os.path.getsize(path) < 1:
+            print 'Ignoring file {0} in commit {1} (empty)'.format(
+                    f, c.id)
+            c.files.pop(f)
+            os.remove(path)
         else:
             c.files[f] = path
-
-
-
 
 def runtest():
     pb = PathBuilder('/home/wiley/tmp')

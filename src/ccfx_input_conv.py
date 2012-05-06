@@ -111,7 +111,9 @@ class CCFXInputConverter:
                     searching = False
                     changeId = 0
                     fileName = ''
+                    last_idx = -1
                     for idx, line in enumerate(inf):
+                        last_idx = idx
                         if (not searching and
                             not (line.startswith(' ') or
                                 line.startswith('+') or
@@ -149,6 +151,8 @@ class CCFXInputConverter:
                         # all line numbers are 1 based (not 0)
                         self.process_line(line, idx + 1, changeId)
 
+                    if last_idx == -1:
+                        print 'bad one: ' + input_file
                     inf.close()
                     self.oldCodeFile.close()
                     self.newCodeFile.close()

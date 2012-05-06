@@ -2,10 +2,10 @@ import os
 import subprocess
 
 from datetime import datetime
-from multiprocessing.pool import ThreadPool
 from path_builder import LangDecider, PathBuilder
 from vcs_interface import VcsInterface
 from vcs_types import Commit, VcsTypes
+from multiprocessing.pool import ThreadPool
 
 
 class HgInterface(VcsInterface):
@@ -76,32 +76,37 @@ class HgInterface(VcsInterface):
 
     def dumpCommits(self):
         p = ThreadPool(VcsInterface.NumDumpingThreads)
-        p.map(dump_commit, map(lambda x: (self, x), self.commits))
+        p.map(lambda c: dump_commit((self, c)), self.commits)
 
 def dump_commit(args):
     old_self, c = args
-    dmp_cmd = 'hg diff -c {0} -U 5 {1}'
-    for f in c.files:
+    dmp_cmd = 'cd {3} && hg diff -c {0} -U 5 {1} > {2}'
+    for f in c.files.keys():
         lang = old_self.langDecider.getLang(f)
         suff = old_self.langDecider.getSuffixFor(lang)
         # why? because we've already filtered these diffs implicitly
         path = (old_self.pb.getFilterOutputPath(old_self.proj, lang) +
                 ("%09d" % old_self.filesSeen.getInc()) +
                 suff)
-        diff_file = open(path, 'w')
-        log_process = subprocess.Popen(
-                dmp_cmd.format(c.id, f),
-                shell=True,
-                cwd=old_self.repoPath,
-                stdout=diff_file).wait()
-        diff_file.close()
+        print path
+        os.system(dmp_cmd.format(c.id, f, path, old_self.repoPath))
+        if not os.path.exists(path):
+            print 'diff for file {0} from commit {1} produced nothing?'
+            c.files.pop(f)
+        elif os.path.getsize(path) < 1:
+            print 'Ignoring file {0} in commit {1} (empty)'.format(
+                    f, c.id)
+            c.files.pop(f)
+            os.remove(path)
+        else:
+            c.files[f] = path
 
 def runtest():
     pb = PathBuilder('/home/wiley/tmp')
     g = HgInterface(PathBuilder.Proj0, pb)
     print str(g.setSuffixes('.cxx', '.hxx', '.java'))
     print str(g.setRepoRoot('/home/wiley/ws/opensource/OOO340'))
-    print str(g.setTimeWindow(datetime(2010, 1, 1), datetime(2010, 1, 10)))
+    print str(g.setTimeWindow(datetime(2011, 1, 1), datetime(2011, 1, 10)))
     print 'loading commits'
     g.load()
     print 'loaded {0} commits'.format(g.commits)

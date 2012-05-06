@@ -405,13 +405,13 @@ if __name__ == "__main__":
         v.model.setCcfxTokenSize(40)
         v.model.setVcsWhich(PathBuilder.Proj0, VcsTypes.Hg)
         # year - month - day
-        v.model.setVcsWhen(PathBuilder.Proj0, datetime(2010, 3, 1), datetime(2010, 3, 10))
+        v.model.setVcsWhen(PathBuilder.Proj0, datetime(2009, 4, 1), datetime(2009, 4, 3))
         v.model.setVcsWhere(PathBuilder.Proj0, '/home/wiley/ws/opensource/OOO340')
         v.model.setVcsSuffix(PathBuilder.Proj0, '.cxx', '.hxx', '.java')
         v.model.setVcsWhich(PathBuilder.Proj1, VcsTypes.Git)
         v.model.setVcsWhere(PathBuilder.Proj1, '/home/wiley/ws/opensource/libreoffice')
         # year - month - day
-        v.model.setVcsWhen(PathBuilder.Proj1, datetime(2010, 3, 1), datetime(2010, 3, 10))
+        v.model.setVcsWhen(PathBuilder.Proj1, datetime(2009, 4, 1), datetime(2009, 4, 3))
         v.model.setVcsSuffix(PathBuilder.Proj1, '.cxx', '.hxx', '.java')
     v.show()
     sys.exit(app.exec_())

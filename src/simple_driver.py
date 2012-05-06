@@ -108,6 +108,9 @@ class SimpleDriver(QObject):
                 self.progress("Converting diffs to ccfx compatible format for first project",
                         step / total_steps)
                 step += 1
+                print 'sleeping'
+#                time.sleep(30.0)
+                print 'awoken!'
                 converter.convert(path_builder)
             elif step == 5:
                 self.progress("Converting diffs to ccfx compatible format for second project",
