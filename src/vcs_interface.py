@@ -1,9 +1,29 @@
 from datetime import datetime
-
+from threading import Lock
 from path_builder import LangDecider
 from vcs_types import VcsTypes
 
+class AtomicInt:
+    def __init__(self, value = 0):
+        self.mutex = Lock()
+        self.value = value
+
+    def getInc(self):
+        self.mutex.acquire()
+        ret = self.value
+        self.value += 1
+        self.mutex.release()
+        return ret
+
+    def get(self):
+        self.mutex.acquire()
+        ret = self.value
+        self.mutex.release()
+        return ret
+
+
 class VcsInterface:
+    NumDumpingThreads = 10
     def __init__(self, proj, path_builder):
         self.proj = proj
         self.pb = path_builder
@@ -11,6 +31,7 @@ class VcsInterface:
         self.repoPath = ''
         self.timeBegin = None
         self.timeEnd = None
+        self.filesSeen = AtomicInt()
 
     def isComplete(self):
         return (self.repoPath and

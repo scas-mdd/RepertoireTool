@@ -9,7 +9,7 @@ class Commit:
     def __init__(self, proj, type=VcsTypes.Git):
         self.id = None
         self.type = type
-        self.files = []
+        self.files = {}
         self.diffs = {}
         self.date = None
         self.author = None

@@ -1,6 +1,6 @@
 import os
 import shutil
-
+from threading import RLock
 from difffilter import DiffFilter
 
 class PathBuilder:
@@ -12,6 +12,7 @@ class PathBuilder:
     # pass in a path to a directoy we have all to ourselves
     def __init__(self, root, force_clean = False):
         self.root = root
+        self.mutex = RLock()
         if force_clean:
             for f in os.listdir(self.root):
                 # doesn't clean out normal files, but I'll let it slide
@@ -19,9 +20,11 @@ class PathBuilder:
         self.exists = []
 
     def makeExist(self, path):
+        self.mutex.acquire()
         if not path in self.exists:
             os.makedirs(path)
         self.exists.append(path)
+        self.mutex.release()
 
     def getDiffPath(self, proj, lang):
         path = (self.root + os.sep + proj + os.sep +
@@ -124,6 +127,8 @@ class LangDecider:
         return LangDecider.NONE
 
     def isCode(self, path):
+        if not path:
+            return False
         if (path.endswith(self.cSuff) or
                 path.endswith(self.hSuff) or
                 path.endswith(self.jSuff)):
