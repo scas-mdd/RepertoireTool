@@ -56,11 +56,14 @@ class HgInterface(VcsInterface):
         line = log_process.stdout.readline()
         while line:
             c = Commit(VcsTypes.Hg)
-            author = line.strip()
+            author_line = line
             date_line = log_process.stdout.readline().strip()
-            c.date = datetime.strptime(
-                    date_line[0:len(date_line) - 6], "%Y-%m-%d %H:%M" )
-            c.id = log_process.stdout.readline().strip()
+            hash_line = log_process.stdout.readline().strip()
+            date = datetime.strptime(date_line[0:len(date_line) - 6],
+                    "%Y-%m-%d %H:%M" )
+            c.id = hash_line.strip()
+            c.author = author_line.strip()
+            c.date = date
             files = log_process.stdout.readline().strip().split()
             line = log_process.stdout.readline()
             for f in files:
@@ -72,7 +75,7 @@ class HgInterface(VcsInterface):
                             ("%09d" % files_seen) +
                             suff)
                     files_seen += 1
-                    c.files[f] = path
+                    c.addFile(f, path)
 
             if (len(c.files) > 0 and
                     c.date <= self.timeEnd and

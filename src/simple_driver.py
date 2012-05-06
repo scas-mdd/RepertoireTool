@@ -9,6 +9,9 @@ from ccfx_entrypoint import CCFXEntryPoint
 from ccfx_input_conv import CCFXInputConverter
 from ccfx_output_conv import convert_ccfx_output
 from path_builder import PathBuilder, LangDecider
+from rep_db import FileMeta, CommitMeta, SideOfClone, CloneMeta, RepDB
+from db_generator import RepDBPopulator
+import pickle
 
 class StartStopSync:
     def __init__(self):
@@ -156,7 +159,8 @@ class SimpleDriver(QObject):
                 lang = LangDecider.CXX
                 output = convert_ccfx_output(path_builder, lang, is_new)
                 rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
-                output.writeToFile(rep_out_path + lang + '_old.txt')
+                rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
+                output.writeToFile(rep_out_path + rep_out_file)
             elif step == 13:
                 self.progress("Filtering ccFinder new C output based on operation...",
                         step / total_steps)
@@ -167,7 +171,8 @@ class SimpleDriver(QObject):
                 lang = LangDecider.CXX
                 output = convert_ccfx_output(path_builder, lang, is_new)
                 rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
-                output.writeToFile(rep_out_path + lang + '_new.txt')
+                rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
+                output.writeToFile(rep_out_path + rep_out_file)
             elif step == 14:
                 self.progress("Filtering ccFinder old header output based on operation...",
                         step / total_steps)
@@ -178,7 +183,8 @@ class SimpleDriver(QObject):
                 lang = LangDecider.HXX
                 output = convert_ccfx_output(path_builder, lang, is_new)
                 rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
-                output.writeToFile(rep_out_path + lang + '_old.txt')
+                rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
+                output.writeToFile(rep_out_path + rep_out_file)
             elif step == 15:
                 self.progress("Filtering ccFinder new header output based on operation...",
                         step / total_steps)
@@ -189,7 +195,8 @@ class SimpleDriver(QObject):
                 lang = LangDecider.HXX
                 output = convert_ccfx_output(path_builder, lang, is_new)
                 rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
-                output.writeToFile(rep_out_path + lang + '_new.txt')
+                rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
+                output.writeToFile(rep_out_path + rep_out_file)
             elif step == 16:
                 self.progress("Filtering ccFinder old java output based on operation...",
                         step / total_steps)
@@ -200,7 +207,8 @@ class SimpleDriver(QObject):
                 lang = LangDecider.JAVA
                 output = convert_ccfx_output(path_builder, lang, is_new)
                 rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
-                output.writeToFile(rep_out_path + lang + '_old.txt')
+                rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
+                output.writeToFile(rep_out_path + rep_out_file)
             elif step == 17:
                 self.progress("Filtering ccFinder new java output based on operation...",
                         step / total_steps)
@@ -211,7 +219,18 @@ class SimpleDriver(QObject):
                 lang = LangDecider.JAVA
                 output = convert_ccfx_output(path_builder, lang, is_new)
                 rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)
-                output.writeToFile(rep_out_path + lang + '_new.txt')
+                rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
+                output.writeToFile(rep_out_path + rep_out_file)
+            elif step == 18:
+                self.progress("Combining ccFinder output into a unified database...",
+                        step / total_steps)
+                step += 1
+                rep_populator = RepDBPopulator(path_builder)
+                db = rep_populator.generateDB(proj0, proj1)
+                print db
+                db_file = open(path_builder.getDBPathAndName(), 'w')
+                pickle.dump(db, db_file)
+                db_file.close()
             else:
                 final_status = True
                 break
