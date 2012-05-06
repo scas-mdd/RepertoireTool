@@ -35,16 +35,6 @@ class CCFXInputConverter:
             line.startswith('***') or line.startswith('---') or
             line.startswith('***')):
             return
-        elif (('/*' in line) & ('*/' not in line)):
-            return
-        elif (('/*' not in line) & ('*/' in line)):
-            return
-        elif line.strip() is '*':
-            return
-        #elif ' * ' in line:
-        #    return
-        #elif ' *\t' in line:
-        #   print line
         elif line.startswith('!'):
             temp_line = line.partition('!')[2]
             operation = Operations.MODIFIED
@@ -117,7 +107,12 @@ class CCFXInputConverter:
                         if (not searching and
                             not (line.startswith(' ') or
                                 line.startswith('+') or
-                                line.startswith('-'))):
+                                line.startswith('-') or
+                                line.startswith("\\"))):
+                            # -+ and space are obvious, but there are some
+                            # diffs with a line "\ No newline at end of file"
+                            # or something similar
+                            # which is apparently valid output
                             searching = True
                             firstSearchingLine = True
 

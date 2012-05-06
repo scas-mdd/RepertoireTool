@@ -10,9 +10,10 @@ class PathBuilder:
     Proj1 = PROJ1
 
     # pass in a path to a directoy we have all to ourselves
-    def __init__(self, root, force_clean = False):
+    def __init__(self, root, force_clean = False, super_safe_mode = False):
         self.root = root
         self.mutex = RLock()
+        self.superSafeMode = super_safe_mode
         if force_clean:
             for f in os.listdir(self.root):
                 # doesn't clean out normal files, but I'll let it slide
@@ -21,7 +22,7 @@ class PathBuilder:
 
     def makeExist(self, path):
         self.mutex.acquire()
-        if not path in self.exists:
+        if not path in self.exists and not self.superSafeMode:
             os.makedirs(path)
         self.exists.append(path)
         self.mutex.release()

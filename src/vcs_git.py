@@ -94,7 +94,7 @@ class GitInterface(VcsInterface):
 
     def dumpCommits(self):
         from multiprocessing import Pool
-        p = Pool(4)
+        p = Pool(VcsInterface.NumDumpingThreads)
         arg_list = map(lambda x: (x, self.repoPath), self.commits)
         p.map(dump_commit, arg_list)
         #for c in self.commits:
