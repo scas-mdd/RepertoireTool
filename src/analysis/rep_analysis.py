@@ -4,6 +4,8 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QThread, QObject
 from ui.analysis import Ui_RepWizard
 
+import os
+from subprocess import Popen, PIPE
 import trend
 
 class RepWizard(QtGui.QWizard):
@@ -38,7 +40,11 @@ class RepWizard(QtGui.QWizard):
 
     def showTrend(self):
         print "showTrend"
-        trend.showTrend(self.rep_db)
+        cmd_str = "./trend.py " + str(self.rep_db)
+        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+#        os.system(cmd_str)
+
+#        trend.showTrend(self.rep_db)
 
     def showFileDist(self):
         print "showFileDist"
@@ -55,9 +61,16 @@ class RepWizard(QtGui.QWizard):
     def validatePage1(self):
         return True
 
+    def setTestValues(self, rep_db_path):
+        print rep_db_path
+        self.rep_db = rep_db_path
+        self.ui.repDBLine.setText(rep_db_path)
+
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     myapp = RepWizard()
+    if len(sys.argv) > 1 and 'braytest' == sys.argv[1]:
+        myapp.setTestValues('/home/bray/RepertoireTool/src/analysis/net_open.p')
     myapp.show()
     sys.exit(app.exec_())
 

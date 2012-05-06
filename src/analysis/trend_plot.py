@@ -20,32 +20,67 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 
+class trendObj:
+    def __init__(self,project_name=None,data=None,label=None):
+        self.projName = project_name
+        self.data = data
+        self.label = label
+
+    def __str__(self):
+        print self.projName
+        print self.data
+        return self.projName
+
+class trendPlot(object):
+    def __init__(self):
+        self.names = []
+        self.data = {}
+        self.label = {}
+
+    def add_obj(self,trend_obj):
+        self.names.append(trend_obj.projName)
+        self.data[trend_obj.projName] = trend_obj.data
+        self.label[trend_obj.projName] = trend_obj.label
+        self.datalen = len(trend_obj.data)
+
+    def series_names(self):
+        """ Names of the data series
+        """
+        return self.names
+
+    def series_len(self):
+        """ Length of a data series
+        """
+        return self.datalen
+
+    def series_count(self):
+        return len(self.data)
+
+    def get_series_data(self, name):
+        return self.data[name]
 
 class Form(QMainWindow):
-    def __init__(self,file_name=None,parent=None):
+    #plot_obj is of type trendPlot
+    def __init__(self,plot_obj=None,parent=None):
         super(Form, self).__init__(parent)
         self.setWindowTitle('PyQt & matplotlib demo: Data plotting')
-        self.filename = file_name
-        self.data = DataHolder()
+#        self.filename = file_name
+#        self.data = DataHolder()
         self.series_list_model = QStandardItemModel()
 
         self.create_menu()
         self.create_main_frame()
         self.create_status_bar()
 
+        self.data = plot_obj
+        self.load_data()
         self.update_ui()
-        self.load_file(self.filename)
         self.on_show()
 
-    def load_file(self, filename=None):
-#        filename = QFileDialog.getOpenFileName(self,
-#            'Open a data file', '.', 'CSV files (*.csv);;All Files (*.*)')
-
-        if filename:
-            self.data.load_from_file(filename)
-            self.fill_series_list(self.data.series_names())
-            self.status_text.setText("Loaded " + filename)
-            self.update_ui()
+    def load_data(self):
+        self.fill_series_list(self.data.series_names())
+#        self.status_text.setText("Loaded " + filename)
+        self.update_ui()
 
     def update_ui(self):
         if self.data.series_count() > 0 and self.data.series_len() > 0:
@@ -73,7 +108,6 @@ class Form(QMainWindow):
 
             if checked:
                 has_series = True
-
                 x_from = self.from_spin.value()
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
@@ -197,65 +231,27 @@ class Form(QMainWindow):
         return action
 
 
-class DataHolder(object):
-    """ Just a thin wrapper over a dictionary that holds integer
-        data series. Each series has a name and a list of numbers
-        as its data. The length of all series is assumed to be
-        the same.
-
-        The series can be read from a CSV file, where each line
-        is a separate series. In each series, the first item in
-        the line is the name, and the rest are data numbers.
-    """
-    def __init__(self, filename=None):
-        self.load_from_file(filename)
-
-    def load_from_file(self, filename=None):
-        self.data = {}
-        self.names = []
-
-        if filename:
-            for line in csv.reader(open(filename, 'rb')):
-                self.names.append(line[0])
-                self.data[line[0]] = map(int, line[1:])
-                self.datalen = len(line[1:])
-
-    def series_names(self):
-        """ Names of the data series
-        """
-        return self.names
-
-    def series_len(self):
-        """ Length of a data series
-        """
-        return self.datalen
-
-    def series_count(self):
-        return len(self.data)
-
-    def get_series_data(self, name):
-        return self.data[name]
+def draw(trnd_plot):
+    app = QApplication(['trend_plot.py'])
+    print trnd_plot.names
+    print trnd_plot.data[trnd_plot.names[0]]
+    print trnd_plot.data[trnd_plot.names[1]]
+    form = Form(trnd_plot)
+    form.show()
+    app.exec_()
 
 
+
+# --------------------- test -----------------------#
 
 def main():
     app = QApplication(sys.argv)
-#    form = Form("/home/bray/Downloads/pyqt_dataplot_demo/qt_mpl_data.csv")
+#   form = Form("/home/bray/Downloads/pyqt_dataplot_demo/qt_mpl_data.csv")
     form = Form("net_open.csv")
     form.show()
     app.exec_()
 
 
 if __name__ == "__main__":
+    print sys.argv
     main()
-
-    #~ dh = DataHolder('qt_mpl_data.csv')
-    #~ print dh.data
-    #~ print dh.get_series_data('1991 Sales')
-    #~ print dh.series_names()
-    #~ print dh.series_count()
-
-
-
-
-

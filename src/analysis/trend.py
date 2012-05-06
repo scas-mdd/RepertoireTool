@@ -6,9 +6,10 @@ import pickle
 from rep_db import SideOfClone
 from rep_db import CloneMeta
 
-#import ternd_plot
+from trend_plot import trendObj
+from trend_plot import trendPlot
 
-
+import trend_plot
 
 def showTrend(rep_out_file):
     cloneList = pickle.load(open(rep_out_file,"rb"))
@@ -34,8 +35,10 @@ def showTrend(rep_out_file):
                 fid2ToMetric[fidx1] = 0
             fid2ToMetric[fidx1] += int(metric)
 
-    data1 = ["project 1",]
-    data2 = ["project 2",]
+#    data1 = ["project 1",]
+#    data2 = ["project 2",]
+    data1 = []
+    data2 = []
 
     for key,val in fid1ToMetric.items():
         data1.append(val)
@@ -43,8 +46,17 @@ def showTrend(rep_out_file):
     for key,val in fid2ToMetric.items():
         data2.append(val)
 
-    print data1
-    print data2
+    trnd_obj1 = trendObj("project 1",data1)
+    trnd_obj2 = trendObj("project 2",data2)
+
+    trnd_plot = trendPlot()
+    trnd_plot.add_obj(trnd_obj1)
+    trnd_plot.add_obj(trnd_obj2)
+
+    trend_plot.draw(trnd_plot)
+
+#    print data1
+#    print data2
 
 
 
@@ -57,6 +69,7 @@ if __name__ == "__main__":
          sys.exit(2)
 
     rep_out = sys.argv[1]
+    print "trend.py: repertoire database: " + rep_out
 
     fileDist = showTrend(rep_out)
 #    gen_scatter_plot(fileDist)
