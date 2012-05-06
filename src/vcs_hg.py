@@ -5,7 +5,6 @@ from datetime import datetime
 from path_builder import LangDecider, PathBuilder
 from vcs_interface import VcsInterface
 from vcs_types import Commit, VcsTypes
-from multiprocessing.pool import ThreadPool
 
 
 class HgInterface(VcsInterface):
@@ -53,6 +52,7 @@ class HgInterface(VcsInterface):
                 shell=True,
                 cwd=self.repoPath,
                 stdout=subprocess.PIPE)
+        files_seen = 0
         line = log_process.stdout.readline()
         while line:
             c = Commit(VcsTypes.Hg)
@@ -64,9 +64,15 @@ class HgInterface(VcsInterface):
             files = log_process.stdout.readline().strip().split()
             line = log_process.stdout.readline()
             for f in files:
-                if not self.langDecider.isCode(f):
-                    continue
-                c.files[f] = None
+                if self.langDecider.isCode(f):
+                    lang = self.langDecider.getLang(f)
+                    suff = self.langDecider.getSuffixFor(lang)
+                    # why filtered? because we've already filtered these diffs implicitly
+                    path = (self.pb.getFilterOutputPath(self.proj, lang) +
+                            ("%09d" % files_seen) +
+                            suff)
+                    files_seen += 1
+                    c.files[f] = path
 
             if (len(c.files) > 0 and
                     c.date <= self.timeEnd and
@@ -75,21 +81,20 @@ class HgInterface(VcsInterface):
         log_process.kill()
 
     def dumpCommits(self):
-        p = ThreadPool(VcsInterface.NumDumpingThreads)
-        p.map(lambda c: dump_commit((self, c)), self.commits)
+        from multiprocessing import Pool
+        p = Pool(VcsInterface.NumDumpingThreads)
+        arg_list = map(lambda x: (x, self.repoPath), self.commits)
+        p.map(dump_commit, arg_list)
+        #for c in self.commits:
+        #    dump_commit((self, c))
 
 def dump_commit(args):
-    old_self, c = args
+    c, repo_path = args
     dmp_cmd = 'cd {3} && hg diff -c {0} -U 5 {1} > {2}'
     for f in c.files.keys():
-        lang = old_self.langDecider.getLang(f)
-        suff = old_self.langDecider.getSuffixFor(lang)
-        # why? because we've already filtered these diffs implicitly
-        path = (old_self.pb.getFilterOutputPath(old_self.proj, lang) +
-                ("%09d" % old_self.filesSeen.getInc()) +
-                suff)
+        path = c.files[f]
         print path
-        os.system(dmp_cmd.format(c.id, f, path, old_self.repoPath))
+        os.system(dmp_cmd.format(c.id, f, path, repo_path))
         if not os.path.exists(path):
             print 'diff for file {0} from commit {1} produced nothing?'
             c.files.pop(f)
@@ -98,8 +103,6 @@ def dump_commit(args):
                     f, c.id)
             c.files.pop(f)
             os.remove(path)
-        else:
-            c.files[f] = path
 
 def runtest():
     pb = PathBuilder('/home/wiley/tmp')
