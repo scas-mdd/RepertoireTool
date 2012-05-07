@@ -43,6 +43,10 @@ class SimpleModel:
         self.projDir = path + os.sep + uniq
         os.mkdir(self.projDir)
         self.pb = PathBuilder(self.projDir)
+        for proj in self.projs.values():
+            if not proj:
+                continue
+            proj.pb = self.pb
         return True
 
     def setCcfxPath(self, path):

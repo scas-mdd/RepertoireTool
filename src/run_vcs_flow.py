@@ -400,14 +400,16 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     v = VcsWizard()
     if len(sys.argv) > 1 and 'wileytest' == sys.argv[1]:
-        v.model.setProjDir('/home/wiley/ws/RepertoireTool/src')
+        v.model.setProjDir('/data/rep')
         v.model.setCcfxPath('/home/wiley/ws/ccfxfiles/ubuntu32/ccfx')
         v.model.setCcfxTokenSize(40)
+
         v.model.setVcsWhich(PathBuilder.Proj0, VcsTypes.Hg)
         # year - month - day
         v.model.setVcsWhen(PathBuilder.Proj0, datetime(2009, 4, 1), datetime(2009, 4, 3))
         v.model.setVcsWhere(PathBuilder.Proj0, '/home/wiley/ws/opensource/OOO340')
         v.model.setVcsSuffix(PathBuilder.Proj0, '.cxx', '.hxx', '.java')
+
         v.model.setVcsWhich(PathBuilder.Proj1, VcsTypes.Git)
         v.model.setVcsWhere(PathBuilder.Proj1, '/home/wiley/ws/opensource/libreoffice')
         # year - month - day
