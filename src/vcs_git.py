@@ -59,7 +59,7 @@ class GitInterface(VcsInterface):
         line = 'dummy'
         files_seen = 0
         while line:
-            c = Commit(VcsTypes.Git)
+            c = Commit(self.proj, VcsTypes.Git)
             hash_line = log_process.stdout.readline()
             author_line = log_process.stdout.readline()
             date_line = log_process.stdout.readline()
@@ -92,13 +92,8 @@ class GitInterface(VcsInterface):
                 self.commits.append(c)
         log_process.kill()
 
-    def dumpCommits(self):
-        from multiprocessing import Pool
-        p = Pool(VcsInterface.NumDumpingThreads)
-        arg_list = map(lambda x: (x, self.repoPath), self.commits)
-        p.map(dump_commit, arg_list)
-        #for c in self.commits:
-        #    dump_commit((c, self.repoPath))
+    def getDumpFunc(self):
+        return dump_commit
 
 def dump_commit(args):
     c, repo_path = args
@@ -111,8 +106,8 @@ def dump_commit(args):
                     f, c.id)
             c.files.pop(f)
         elif os.path.getsize(path) < 1:
-            print 'Ignoring file {0} in commit {1} (empty)'.format(
-                    f, c.id)
+            print 'Ignoring file {0} in commit {1} (empty diff {2}'.format(
+                    f, c.id, path)
             c.files.pop(f)
             os.remove(path)
 

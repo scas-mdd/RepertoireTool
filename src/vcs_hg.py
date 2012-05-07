@@ -55,7 +55,7 @@ class HgInterface(VcsInterface):
         files_seen = 0
         line = log_process.stdout.readline()
         while line:
-            c = Commit(VcsTypes.Hg)
+            c = Commit(self.proj, VcsTypes.Hg)
             author_line = line
             date_line = log_process.stdout.readline().strip()
             hash_line = log_process.stdout.readline().strip()
@@ -83,20 +83,14 @@ class HgInterface(VcsInterface):
                 self.commits.append(c)
         log_process.kill()
 
-    def dumpCommits(self):
-        from multiprocessing import Pool
-        p = Pool(VcsInterface.NumDumpingThreads)
-        arg_list = map(lambda x: (x, self.repoPath), self.commits)
-        p.map(dump_commit, arg_list)
-        #for c in self.commits:
-        #    dump_commit((self, c))
+    def getDumpFunc(self):
+        return dump_commit
 
 def dump_commit(args):
     c, repo_path = args
     dmp_cmd = 'cd {3} && hg diff -c {0} -U 5 {1} > {2}'
     for f in c.files.keys():
         path = c.files[f]
-        print path
         os.system(dmp_cmd.format(c.id, f, path, repo_path))
         if not os.path.exists(path):
             print 'diff for file {0} from commit {1} produced nothing?'

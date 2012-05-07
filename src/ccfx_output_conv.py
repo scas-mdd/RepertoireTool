@@ -77,6 +77,7 @@ def convert_ccfx_output(pb, lang, is_new, debug = False):
         pidx2orig = {}
         origline2op = {}
         # build a map of line numbers in ccfx_input to filtered diff line
+        last_dst = last_src = 0
         for i, cline in enumerate(conv):
             if i < 2:
                 continue

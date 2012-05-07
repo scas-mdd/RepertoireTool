@@ -2,7 +2,6 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import QObject
 
 from threading import Condition
-from threading import Lock
 import time
 
 from ccfx_entrypoint import CCFXEntryPoint
@@ -111,9 +110,6 @@ class SimpleDriver(QObject):
                 self.progress("Converting diffs to ccfx compatible format for first project",
                         step / total_steps)
                 step += 1
-                print 'sleeping'
-#                time.sleep(30.0)
-                print 'awoken!'
                 converter.convert(path_builder)
             elif step == 5:
                 self.progress("Converting diffs to ccfx compatible format for second project",
@@ -222,12 +218,13 @@ class SimpleDriver(QObject):
                 rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)
                 output.writeToFile(rep_out_path + rep_out_file)
             elif step == 18:
-                self.progress("Combining ccFinder output into a unified database...",
+                self.progress(
+                        "Combining ccFinder output into a unified database...",
                         step / total_steps)
                 step += 1
+                pickle.dump(model, open(path_builder.getModelPathAndName(), 'w'))
                 rep_populator = RepDBPopulator(path_builder)
                 db = rep_populator.generateDB(proj0, proj1)
-                print db
                 db_file = open(path_builder.getDBPathAndName(), 'w')
                 pickle.dump(db, db_file)
                 db_file.close()

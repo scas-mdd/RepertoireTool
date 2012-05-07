@@ -1,29 +1,13 @@
 from datetime import datetime
-from threading import Lock
 from path_builder import LangDecider
 from vcs_types import VcsTypes
-
-class AtomicInt:
-    def __init__(self, value = 0):
-        self.mutex = Lock()
-        self.value = value
-
-    def getInc(self):
-        self.mutex.acquire()
-        ret = self.value
-        self.value += 1
-        self.mutex.release()
-        return ret
-
-    def get(self):
-        self.mutex.acquire()
-        ret = self.value
-        self.mutex.release()
-        return ret
-
+from rep_db import FileMeta, CommitMeta
+import os
 
 class VcsInterface:
     NumDumpingThreads = 10
+    EnableMultithreadedDump = True
+
     def __init__(self, proj, path_builder):
         self.proj = proj
         self.pb = path_builder
@@ -31,7 +15,6 @@ class VcsInterface:
         self.repoPath = ''
         self.timeBegin = None
         self.timeEnd = None
-        self.filesSeen = AtomicInt()
 
     def isComplete(self):
         return (self.repoPath and
@@ -71,6 +54,21 @@ class VcsInterface:
         self.timeEnd = latest_time
         return True
 
+    def dumpCommits(self):
+        if VcsInterface.EnableMultithreadedDump:
+            dump_func = self.getDumpFunc()
+            from multiprocessing import Pool
+            p = Pool(VcsInterface.NumDumpingThreads)
+            arg_list = map(lambda x: (x, self.repoPath), self.commits)
+            p.map(dump_func, arg_list)
+        else:
+            for c in self.commits:
+                dump_func((c, self.repoPath))
+
+    # Subclasses should override this
+    def getDumpFunc(self):
+        raise NotImplementedError
+
     # Subclasses should override this
     def verifyRepoPath(self, path):
         return True
@@ -83,25 +81,24 @@ class VcsInterface:
     def load(self):
         raise NotImplementedError
 
-    # Subclasses should override this
-    def dumpCommits(self):
-        raise NotImplementedError
-
     # we add entries to the first two arguments, that's the populate part
     # commits is a mapping from commitId to CommitMeta
     # fidx2commitid is a mapping from file idx to commitId
     # file2fileIdx is a mapping from ccfx input files to the corresponding
     # ccfx file index in the output
-    def populateDB(self, commits, fidx2commitid, file2fileIdx):
+    def populateDB(self, commits, fidx2commitid, file2fileIdx, fidx2numports):
         for c in self.commits:
             files = {}
             for orig_name, dump_name in c.files.items():
-                input_name = self.pb.translateFilterToCCFXInput(dump_name)
+                if not os.path.exists(dump_name):
+                    continue
+                if not dump_name in file2fileIdx:
+                    print 'Populating DB for {0} failed'.format(dump_name)
+                    continue
                 num_edits = count_diff_edits(dump_name)
-                # some one else will come through and fill this out later
-                num_ports = 0
+                file_idx = file2fileIdx[dump_name]
+                num_ports = fidx2numports[file_idx]
                 file_meta = FileMeta(dump_name, orig_name, num_edits, num_ports)
-                file_idx = file2fileIdx[input_name]
                 fidx2commitid[file_idx] = c.getDecoratedId()
                 files[file_idx] = file_meta
             commit_meta = CommitMeta(c.author, c.date, c.getDecoratedId(), files, c.proj)

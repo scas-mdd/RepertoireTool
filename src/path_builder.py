@@ -20,6 +20,15 @@ class PathBuilder:
                 shutil.rmtree(self.root + os.sep + f, ignore_errors = True)
         self.exists = []
 
+    def __getstate__(self):
+        result = self.__dict__.copy()
+        del result['mutex']
+        return result
+
+    def __setstate__(self, a_dict):
+        self.__dict__ = a_dict
+        self.mutex = RLock()
+
     def makeExist(self, path):
         self.mutex.acquire()
         if not path in self.exists and not self.superSafeMode:
@@ -105,7 +114,7 @@ class PathBuilder:
     def getRepertoireOutputFileName(self, lang, is_new):
         return self.getCCFXOutputFileName(lang, is_new, False)
 
-    def translateFilterToCCFXInput(self, filter_path):
+    def translateFilterToCCFXInput(self, filter_path, is_new):
         proj = PathBuilder.Proj0
         if not filter_path.startswith(self.getProjRoot(proj)):
             proj = PathBuilder.Proj1
@@ -114,10 +123,14 @@ class PathBuilder:
             if filter_path.startswith(filter_prefix):
                 break
         file_name = filter_path[len(filter_prefix):]
-        return self.getCCFXInputPath(proj, lang) + file_name
+        return self.getCCFXInputPath(proj, lang, is_new) + file_name
 
     def getDBPathAndName(self):
         return self.root + os.sep + 'rep_db.pickle'
+
+    def getModelPathAndName(self):
+        return 'model.pickle'
+
 
 # figures out what language a file is
 class LangDecider:
