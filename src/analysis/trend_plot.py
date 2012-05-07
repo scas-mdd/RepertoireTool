@@ -111,11 +111,30 @@ class Form(QMainWindow):
                 x_from = self.from_spin.value()
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
-                self.axes.plot(range(len(series)), series, 'o-', label=name)
+                self.axes.plot(range(len(series)), series, 'o-', label=name,picker=5)
 
         if has_series and self.legend_cb.isChecked():
             self.axes.legend()
         self.canvas.draw()
+
+    def on_pick(self, event):
+        # The event received here is of the type
+        # matplotlib.backend_bases.PickEvent
+        #
+        # It carries lots of information, of which we're using
+        # only a small amount here.
+        #
+        print "on pick event"
+        thisline = event.artist
+        xdata, ydata = thisline.get_data()
+        ind = event.ind
+        print 'on pick line:', zip(xdata[ind], ydata[ind])
+#        box_points = event.artist.get_bbox().get_points()
+        msg = "You've clicked on data with coords:\n %s" % zip(xdata[ind], ydata[ind])
+
+
+        QMessageBox.information(self, "Click!", msg)
+
 
     def on_about(self):
         msg = __doc__
@@ -141,6 +160,10 @@ class Form(QMainWindow):
         self.canvas.setParent(self.main_frame)
 
         self.axes = self.fig.add_subplot(111)
+        # Bind the 'pick' event for clicking on one of the bars
+        #
+        self.canvas.mpl_connect('pick_event', self.on_pick)
+
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
 
         log_label = QLabel("Data series:")
