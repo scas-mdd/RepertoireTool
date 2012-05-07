@@ -5,15 +5,12 @@ class FileMeta:
         self.numEdits = num_edits
         self.numPorts = num_ports
 
-    def __str__(self):
-        return self.diffFile + "," + self.origFile + "," + self.numEdits + "," + self.numPorts
-
 class CommitMeta:
     Proj0 = 0
     Proj1 = 1
     # commit id is (for instance) the hash of the git commit
     # or the svn commit number
-    def __init__(self, commit_id, author, date,  files, proj_id):
+    def __init__(self, author, date, commit_id, files, proj_id):
         self.author = author
         self.date = date
         self.commitId = commit_id
@@ -21,15 +18,6 @@ class CommitMeta:
         self.files = files
         # either 0 or 1 (CommitMeta.Proj0 or CommitMeta.Proj1)
         self.projId = proj_id
-
-    def __str__(self):
-        print self.author
-        print self.date
-        for k in self.files:
-            print k
-            print self.files[k]
-        print self.projId
-        return self.commitId
 
 class SideOfClone:
     # file_id is the unique identifier from CCFinder output
@@ -52,18 +40,13 @@ class CloneMeta:
         self.rhsCommitId = rhs_commit_id
         self.metric = metric
 
-    def __str__(self):
-        print self.cloneId
-        print self.lhs
-        print self.lhsCommitId
-        print self.rhs
-        print self.rhsCommitId
-        print self.metric
-        return ""
-
 class RepDB:
-	def __init__(self,commits=None,clones=None):
-		# a mapping from commitId to CommitMeta
-		self.commits = commits
-		# a list of clones
-		self.clones = clones
+    def __init__(self, commits, clones):
+        # a mapping from commitId to CommitMeta
+        self.commits = commits
+        # a list of clones
+        self.clones = clones
+
+    def __repr__(self):
+        return "[RepDB: {0} and {1}]".format(self.commits, self.clones)
+

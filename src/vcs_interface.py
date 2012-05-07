@@ -87,3 +87,41 @@ class VcsInterface:
     def dumpCommits(self):
         raise NotImplementedError
 
+    # we add entries to the first two arguments, that's the populate part
+    # commits is a mapping from commitId to CommitMeta
+    # fidx2commitid is a mapping from file idx to commitId
+    # file2fileIdx is a mapping from ccfx input files to the corresponding
+    # ccfx file index in the output
+    def populateDB(self, commits, fidx2commitid, file2fileIdx):
+        for c in self.commits:
+            files = {}
+            for orig_name, dump_name in c.files.items():
+                input_name = self.pb.translateFilterToCCFXInput(dump_name)
+                num_edits = count_diff_edits(dump_name)
+                # some one else will come through and fill this out later
+                num_ports = 0
+                file_meta = FileMeta(dump_name, orig_name, num_edits, num_ports)
+                file_idx = file2fileIdx[input_name]
+                fidx2commitid[file_idx] = c.getDecoratedId()
+                files[file_idx] = file_meta
+            commit_meta = CommitMeta(c.author, c.date, c.getDecoratedId(), files, c.proj)
+            commits[c.getDecoratedId()] = commit_meta
+
+def count_diff_edits(path):
+    in_diff = False
+    num_edits = 0
+    with open(path, 'r') as f:
+        for line in f:
+            if in_diff:
+                if (line.startswith('+') or
+                        line.startswith(' ') or
+                        line.startswith('-')):
+                    num_edits += 1
+                elif line.startswith('\\'):
+                    pass
+                else:
+                    in_diff = False
+            if line.startswith("@@"):
+                in_diff = True
+    return num_edits
+

@@ -66,11 +66,11 @@ class GitInterface(VcsInterface):
             if not hash_line.strip():
                 break
 
-            c.id = hash_line.strip()
-            c.author = author_line.strip()
             if date_line.strip():
                 last_date = datetime.strptime(
                         date_line.strip()[0: -6], "%Y-%m-%d %H:%M:%S" )
+            c.id = hash_line.strip()
+            c.author = author_line.strip()
             c.date = last_date
             line = log_process.stdout.readline()
             while line.strip():
@@ -83,7 +83,7 @@ class GitInterface(VcsInterface):
                             ("%09d" % files_seen) +
                             suff)
                     files_seen += 1
-                    c.files[f] = path
+                    c.addFile(f, path)
                 line = log_process.stdout.readline()
 
             if (len(c.files) > 0 and

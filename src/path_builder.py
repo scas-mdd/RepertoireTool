@@ -27,14 +27,19 @@ class PathBuilder:
         self.exists.append(path)
         self.mutex.release()
 
+    def getProjRoot(self, proj):
+        path = (self.root + os.sep + proj + os.sep)
+        self.makeExist(path)
+        return path
+
     def getDiffPath(self, proj, lang):
-        path = (self.root + os.sep + proj + os.sep +
+        path = (self.getProjRoot(proj) +
                 lang + os.sep + "raw_diffs" + os.sep)
         self.makeExist(path)
         return path
 
     def getFilterOutputPath(self, proj, lang):
-        path = (self.root + os.sep + proj + os.sep +
+        path = (self.getProjRoot(proj) +
                 lang + os.sep + "filter_output" + os.sep)
         self.makeExist(path)
         return path
@@ -44,7 +49,7 @@ class PathBuilder:
         ext = '_old'
         if is_new:
             ext = '_new'
-        path = (self.root + os.sep + proj + os.sep +
+        path = (self.getProjRoot(proj) +
                 lang + os.sep + "ccfx_input"  + ext + os.sep)
         self.makeExist(path)
         return path
@@ -96,6 +101,23 @@ class PathBuilder:
         path = self.root + os.sep + 'repertoire' + os.sep
         self.makeExist(path)
         return path
+
+    def getRepertoireOutputFileName(self, lang, is_new):
+        return self.getCCFXOutputFileName(lang, is_new, False)
+
+    def translateFilterToCCFXInput(self, filter_path):
+        proj = PathBuilder.Proj0
+        if not filter_path.startswith(self.getProjRoot(proj)):
+            proj = PathBuilder.Proj1
+        for lang in [LangDecider.CXX, LangDecider.JAVA, LangDecider.HXX]:
+            filter_prefix = self.getFilterOutputPath(proj, lang)
+            if filter_path.startswith(filter_prefix):
+                break
+        file_name = filter_path[len(filter_prefix):]
+        return self.getCCFXInputPath(proj, lang) + file_name
+
+    def getDBPathAndName(self):
+        return self.root + os.sep + 'rep_db.pickle'
 
 # figures out what language a file is
 class LangDecider:
