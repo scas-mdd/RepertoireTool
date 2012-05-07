@@ -1,31 +1,46 @@
 class FileMeta:
-	def __init__(self, diff_file, orig_file, num_edits, num_ports):
-		self.diffFile = diff_file
-		self.origFile = orig_file
-		self.numEdits = num_edits
-		self.numPorts = num_ports
+    def __init__(self, diff_file, orig_file, num_edits, num_ports):
+        self.diffFile = diff_file
+        self.origFile = orig_file
+        self.numEdits = num_edits
+        self.numPorts = num_ports
+
+    def __str__(self):
+        return self.diffFile + "," + self.origFile + "," + self.numEdits + "," + self.numPorts
 
 class CommitMeta:
-	Proj0 = 0
-	Proj1 = 1
-	# commit id is (for instance) the hash of the git commit
-	# or the svn commit number
-	def __init__(self, author, date, commit_id, files, proj_id):
-		self.author = author
-		self.date = date
-		self.commitId = commit_id
-		# files is a mapping from fileId to FileMeta
-		self.files = files
-		# either 0 or 1 (CommitMeta.Proj0 or CommitMeta.Proj1)
-		self.projId = proj_id
+    Proj0 = 0
+    Proj1 = 1
+    # commit id is (for instance) the hash of the git commit
+    # or the svn commit number
+    def __init__(self, commit_id, author, date,  files, proj_id):
+        self.author = author
+        self.date = date
+        self.commitId = commit_id
+        # files is a mapping from fileId to FileMeta
+        self.files = files
+        # either 0 or 1 (CommitMeta.Proj0 or CommitMeta.Proj1)
+        self.projId = proj_id
+
+    def __str__(self):
+        print self.author
+        print self.date
+        for k in self.files:
+            print k
+            print self.files[k]
+        print self.projId
+        return self.commitId
 
 class SideOfClone:
-	# file_id is the unique identifier from CCFinder output
-	# it really represents a particular file in a particular commit
-	def __init__(self, file_id, start_line, end_line):
-		self.fileId = file_id
-		self.startLine = start_line
-		self.endLine = end_line
+    # file_id is the unique identifier from CCFinder output
+    # it really represents a particular file in a particular commit
+    def __init__(self, file_id, start_line, end_line):
+        self.fileId = file_id
+        self.startLine = start_line
+        self.endLine = end_line
+
+    def __str__(self):
+        return self.fileId + "," + self.startLine + "," + self.endLine
 
 class CloneMeta:
 	# lhs and rhs are SideOfClone's
@@ -37,8 +52,17 @@ class CloneMeta:
         self.rhsCommitId = rhs_commit_id
         self.metric = metric
 
+    def __str__(self):
+        print self.cloneId
+        print self.lhs
+        print self.lhsCommitId
+        print self.rhs
+        print self.rhsCommitId
+        print self.metric
+        return ""
+
 class RepDB:
-	def __init__(self):
+	def __init__(self,commits=None,clones=None):
 		# a mapping from commitId to CommitMeta
 		self.commits = commits
 		# a list of clones

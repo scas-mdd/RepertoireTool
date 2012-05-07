@@ -15,6 +15,7 @@ import sys, os, csv
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from pylab import *
 import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
@@ -117,13 +118,28 @@ class Form(QMainWindow):
             self.axes.legend()
         self.canvas.draw()
 
+    def on_button_press(self,event):
+        """ If the left mouse button is pressed: draw a little square.
+        """
+        print 'you pressed', event.key, event.xdata, event.ydata
+        tb = get_current_fig_manager().toolbar
+        x,y = event.xdata,event.ydata
+        self.axes.plot([x],[y],'rs')
+        self.canvas.draw()
+
+        if event.button==1 and event.inaxes and tb.mode == '':
+            x,y = event.xdata,event.ydata
+            plot([x],[y],'rs')
+            self.canvas.draw()
+
+
+    def on_button_release(self,event):
+        print 'you released', event.key, event.xdata, event.ydata
+
+    def on_motion_notify(self,event):
+        print 'you released', event.key, event.xdata, event.ydata
+
     def on_pick(self, event):
-        # The event received here is of the type
-        # matplotlib.backend_bases.PickEvent
-        #
-        # It carries lots of information, of which we're using
-        # only a small amount here.
-        #
         print "on pick event"
         thisline = event.artist
         xdata, ydata = thisline.get_data()
@@ -135,6 +151,12 @@ class Form(QMainWindow):
 
         QMessageBox.information(self, "Click!", msg)
 
+    def connect_events(self):
+#        self.canvas.mpl_connect('pick_event', self.on_pick)
+        gca().set_autoscale_on(False)
+        self.canvas.mpl_connect('button_press_event', self.on_button_press)
+        self.canvas.mpl_connect('button_release_event', self.on_button_press)
+#        self.cidmotion = self.canvas.mpl_connect('motion_notify_event', self.on_motion_notify)
 
     def on_about(self):
         msg = __doc__
@@ -160,9 +182,8 @@ class Form(QMainWindow):
         self.canvas.setParent(self.main_frame)
 
         self.axes = self.fig.add_subplot(111)
-        # Bind the 'pick' event for clicking on one of the bars
-        #
-        self.canvas.mpl_connect('pick_event', self.on_pick)
+
+        self.connect_events()
 
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
 
@@ -208,7 +229,7 @@ class Form(QMainWindow):
         self.setCentralWidget(self.main_frame)
 
     def create_status_bar(self):
-        self.status_text = QLabel("Please load a data file")
+        self.status_text = QLabel("Extent of porting")
         self.statusBar().addWidget(self.status_text, 1)
 
     def create_menu(self):
