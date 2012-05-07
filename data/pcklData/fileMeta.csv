@@ -1,0 +1,13 @@
+file_id,diff_file,orig_file,num_edits,num_ports
+1,bt_diff.c,bt.c,25,17
+2,net_diff.c,net.c,30,22
+3,arch_diff.c,arch.c,16,10
+4,dev_diff.c,dev.c,59,44
+5,crypt_diff.c,crypt.c,22,12
+6,libsys_diff.c,libsys.c,54,50
+11,libsys_diff.c,libsys.c,56,50
+12,dev_diff.c,dev.c,34,24
+13,libcrypt_diff.c,libcrypt.c,32,19
+14,libarch_diff.c,libarch.c,15,5
+15,ndis_diff.c,ndis.c,25,20
+16,bt_diff.c,bt.c,54,45
