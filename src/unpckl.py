@@ -37,6 +37,6 @@ if __name__ == "__main__":
     commitId2Meta = rep_db.commits
     clones = rep_db.clones
 
-#    unpckl_clone_meta(clones)
+    unpckl_clone_meta(clones)
     unpckl_commit_meta(commitId2Meta)
 

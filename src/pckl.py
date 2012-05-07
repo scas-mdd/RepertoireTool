@@ -46,11 +46,15 @@ def pckl_commit_meta(commit_meta):
     for row in reader:
         if rownum is not 0:
             fm = None
-            fileMeta = fileId2Meta.get(row[column["file_id"]],None)
+            file_id = row[column["file_id"]]
+            proj_id = row[column["proj_id"]]
+            commit_id = row[column["commit_id"]]
+
+            fileMeta = fileId2Meta.get(file_id,None)
             fm = {row[column["file_id"]]:fileMeta}
-            cmMeta = CommitMeta(row[column["commit_id"]],row[column["author"]],row[column["date"]],fm,row[column["proj_id"]])
-#            print cmMeta
-            commitId2Meta[row[column["commit_id"]]] = cmMeta
+            cmMeta = CommitMeta(row[column["author"]],row[column["date"]],commit_id,fm,proj_id)
+            print cmMeta
+            commitId2Meta[(proj_id,commit_id)] = cmMeta
 
         rownum += 1
 
@@ -110,8 +114,6 @@ if __name__ == "__main__":
     global commitId2Meta
     global clones
 
-    rep_db = RepDB()
-    rep_db.commits = commitId2Meta
-    rep_db.clones = clones
+    rep_db = RepDB(commitId2Meta,clones)
 
     pickle.dump( rep_db, open( pickle_out, "wb" ) )

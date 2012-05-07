@@ -5,6 +5,10 @@ class FileMeta:
         self.numEdits = num_edits
         self.numPorts = num_ports
 
+    def __repr__(self):
+        return "{0},{1},{2},{3}".format(
+                self.diffFile,self.origFile,self.numEdits,self.numPorts)
+
 class CommitMeta:
     Proj0 = 0
     Proj1 = 1
@@ -19,6 +23,10 @@ class CommitMeta:
         # either 0 or 1 (CommitMeta.Proj0 or CommitMeta.Proj1)
         self.projId = proj_id
 
+    def __repr__(self):
+        return "{0},{1},{2},{3}\t{4}".format(
+                self.projId,self.commitId,self.date,self.author,self.files)
+
 class SideOfClone:
     # file_id is the unique identifier from CCFinder output
     # it really represents a particular file in a particular commit
@@ -27,8 +35,8 @@ class SideOfClone:
         self.startLine = start_line
         self.endLine = end_line
 
-    def __str__(self):
-        return self.fileId + "," + self.startLine + "," + self.endLine
+    def __repr__(self):
+        return "{0}.{1}-{2}".format(self.fileId,self.startLine,self.endLine)
 
 class CloneMeta:
 	# lhs and rhs are SideOfClone's
@@ -39,6 +47,10 @@ class CloneMeta:
         self.rhs = rhs
         self.rhsCommitId = rhs_commit_id
         self.metric = metric
+
+    def __repr__(self):
+        return "{0}\t({1}){2}\t({3}){4}\t{5}".format(
+                self.cloneId,self.lhsCommitId,self.lhs,self.rhsCommitId,self.rhs,self.metric)
 
 class RepDB:
     def __init__(self, commits, clones):
