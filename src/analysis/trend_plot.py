@@ -21,28 +21,42 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 
-class trendObj:
-    def __init__(self,project_name=None,data=None,label=None):
-        self.projName = project_name
-        self.data = data
-        self.label = label
-
-    def __str__(self):
-        print self.projName
-        print self.data
-        return self.projName
+from rep_db import *
 
 class trendPlot(object):
-    def __init__(self):
-        self.names = []
+    #proj0, proj1 are map between commit_id and trendObj
+    def __init__(self,proj0,proj1,rep_db):
+        self.proj0 = proj0
+        self.proj1 = proj1
+        self.names = ['project 0','project 1']
         self.data = {}
-        self.label = {}
+        self.label = {}  #commit_id
+        self.label1 = {} #date
+        self.datalen = 0
+        self.get_plot_data(rep_db)
 
-    def add_obj(self,trend_obj):
-        self.names.append(trend_obj.projName)
-        self.data[trend_obj.projName] = trend_obj.data
-        self.label[trend_obj.projName] = trend_obj.label
-        self.datalen = len(trend_obj.data)
+    def get_plot_data(self,rep_db):
+        if self.proj0 is None or self.proj1 is None:
+            return None
+
+        data = []
+        label = []
+        label1 = []
+
+        for proj in (self.proj0,self.proj1):
+            pcent_port = []
+            commit_date = []
+            commit_id = []
+            for cm_id,trnd_obj in proj.iteritems():
+                total_edit = rep_db.getTotalEdit(cm_id)
+                total_port = trnd_obj.metric
+                pcent_edit = (float(total_port)/total_edit)*100
+                pcent_port.append(pcent_edit)
+            data.append(pcent_port)
+
+        for i in (0,1):
+            self.data[self.names[i]] = data[i]
+            self.datalen += len(data[i])
 
     def series_names(self):
         """ Names of the data series

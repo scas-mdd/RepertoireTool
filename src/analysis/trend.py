@@ -3,62 +3,114 @@ import os
 import sys
 import csv
 import pickle
-from rep_db import SideOfClone
-from rep_db import CloneMeta
+from rep_db import *
+from datetime import *
 
-from trend_plot import trendObj
+#from trend_plot import trendObj
 from trend_plot import trendPlot
 
 import trend_plot
 
-def showTrend(rep_out_file):
-    cloneList = pickle.load(open(rep_out_file,"rb"))
+class trendObj:
+    def __init__(self,metric,commit_meta=None,file_list=None):
+        self.metric = metric
+        if commit_meta is not None:
+            self.commitId = commit_meta.commitId
+            self.projId = commit_meta.projId
+            self.date = commit_meta.date
+            self.author = commit_meta.author
+            self.fileList = file_list
 
-    fid1ToMetric = {}
-    fid2ToMetric = {}
+    def __repr__(self):
+        return "{0}:{1}".format(self.commitId,self.metric)
 
+
+def showTrend(rep_db):
+
+    cloneList = rep_db.clones
+    commitId2Meta = rep_db.commits
+
+    #data points in trend map
+    proj0_trend = {} #map between commitId and trendObj
+    proj1_trend = {}
+
+    #first create data points for all commitIds
+    for commit_id,commit_meta in commitId2Meta.iteritems():
+        print commit_id
+        proj_trend = proj1_trend
+        if rep_db.getProjId(commit_id) == 'proj0':
+            proj_trend = proj0_trend
+        proj_trend[commit_id] = trendObj(0,commit_meta)
+
+    #populate data points with metric
     for clMeta in cloneList:
+        print clMeta
         clIdx = clMeta.cloneId
         fidx1 = clMeta.lhs.fileId
         fidx2 = clMeta.rhs.fileId
+        lhs_id = clMeta.lhsCommitId
+        rhs_id = clMeta.rhsCommitId
         metric = clMeta.metric
 
-        #this will be later filtered by date
-        if fidx1 < fidx2 :
-            #this is for projId 1
-            if(fid1ToMetric.has_key(fidx1) == 0):
-                fid1ToMetric[fidx1] = 0
-            fid1ToMetric[fidx1] += int(metric)
-        else:
-            #this is for projId 2
-            if(fid2ToMetric.has_key(fidx1) == 0):
-                fid2ToMetric[fidx1] = 0
-            fid2ToMetric[fidx1] += int(metric)
+        lcommit_date = rep_db.getCommitDate(lhs_id)
+        rcommit_date = rep_db.getCommitDate(rhs_id)
 
-#    data1 = ["project 1",]
-#    data2 = ["project 2",]
+        print "%s,%s" % (lcommit_date,rcommit_date)
+
+        commit_id = lhs_id
+        if (lcommit_date <= rcommit_date):
+            #porting is done to rhs project
+            commit_id = rhs_id
+
+        proj_trend = proj1_trend
+        if rep_db.getProjId(commit_id) == 'proj0':
+            proj_trend = proj0_trend
+
+        proj_trend[commit_id].metric += metric
+
+    trnd_plot = trendPlot(proj0_trend,proj1_trend,rep_db)
+    trend_plot.draw(trnd_plot)
+
+"""
+    trend_plot_data = []
+    trend_plot_label0 = []
+    trend_plot_label1 = []
+
+    for proj in (proj0_trend,proj1_trend):
+        pcent_port = []
+        commit_date = []
+        commit_id = []
+        for cm_id,trnd_obj in proj.iteritems():
+            total_edit = rep_db.getTotalEdit(cm_id)
+            total_port = trnd_obj.metric
+            pcent_edit = (float(total_port)/total_edit)*100
+            pcent_port.append(pcent_edit)
+        trend_plot_data.append(pcent)
+
+    print pcent_port
+
+    data0 = []
     data1 = []
-    data2 = []
 
-    for key,val in fid1ToMetric.items():
+    for key,val in lproj_trend.items():
+        data0.append(val)
+
+    for key,val in rproj_trend.items():
         data1.append(val)
 
-    for key,val in fid2ToMetric.items():
-        data2.append(val)
-
+    trnd_obj0 = trendObj("project 0",data0)
     trnd_obj1 = trendObj("project 1",data1)
-    trnd_obj2 = trendObj("project 2",data2)
 
     trnd_plot = trendPlot()
+    trnd_plot.add_obj(trnd_obj0)
     trnd_plot.add_obj(trnd_obj1)
-    trnd_plot.add_obj(trnd_obj2)
 
     trend_plot.draw(trnd_plot)
 
+#    print data0
 #    print data1
-#    print data2
 
-
+"""
 
 #---------------testing-----------------#
 
@@ -68,9 +120,10 @@ if __name__ == "__main__":
          print "rep_out.p is pickle dump of rep output"
          sys.exit(2)
 
-    rep_out = sys.argv[1]
-    print "trend.py: repertoire database: " + rep_out
+    print "trend.py: repertoire database: " + sys.argv[1]
 
-    fileDist = showTrend(rep_out)
-#    gen_scatter_plot(fileDist)
+    rep_db = pickle.load(open(sys.argv[1],"rb"))
+
+
+    fileDist = showTrend(rep_db)
 
