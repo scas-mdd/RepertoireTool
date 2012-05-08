@@ -51,7 +51,6 @@ class scatterPlot:
 
 #-------------- test ---------------#
 if __name__ == "__main__":
-
     file_map = {('file1', 'File1'): 1, ('file1', 'File3'): 3,
             ('file2', 'File2'): 1,
             ('file3', 'File1'): 5, ('file3', 'File2'): 4, ('file3', 'File3'): 2

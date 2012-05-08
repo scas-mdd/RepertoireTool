@@ -12,7 +12,7 @@ from trend_plot import trendPlot
 import trend_plot
 
 class trendObj:
-    def __init__(self,metric,commit_meta=None,file_list=None):
+    def __init__(self,metric,commit_meta=None):
         self.metric = metric
         if commit_meta is not None:
             print commit_meta
@@ -20,7 +20,9 @@ class trendObj:
             self.projId = commit_meta.projId
             self.date = commit_meta.date
             self.author = commit_meta.author
-            self.fileList = file_list
+
+        self.fileDist = {}
+
 
     def __repr__(self):
         return "{0}:{1}".format(self.commitId,self.metric)
@@ -58,7 +60,6 @@ def showTrend(rep_db):
 
         lcommit_date = rep_db.getCommitDate(lhs_id)
         rcommit_date = rep_db.getCommitDate(rhs_id)
-
         print "%s,%s" % (lcommit_date,rcommit_date)
 
         commit_id = lhs_id
@@ -74,6 +75,24 @@ def showTrend(rep_db):
             proj_trend = proj0_trend
 
         proj_trend[commit_date].metric += metric
+
+        #file mapping
+        fidx1, start1, end1 = clMeta.lhs.get_val()
+        fidx2, start2, end2 = clMeta.rhs.get_val()
+        lhs_file = rep_db.getFileName(lhs_id,fidx1)
+        rhs_file = rep_db.getFileName(rhs_id,fidx2)
+
+        if lhs_file is None or rhs_file is None:
+            continue
+
+        key = (lhs_file,rhs_file)
+        if rep_db.getProjId(lhs_id) == 'proj1':
+            key = (rhs_file,lhs_file)
+
+        file_dist = proj_trend[commit_date].fileDist
+        if file_dist.has_key(key) == 0 :
+            file_dist[key] = 0
+        file_dist[key] += metric
 
     trnd_plot = trendPlot(proj0_trend,proj1_trend,rep_db)
     trend_plot.draw(trnd_plot)

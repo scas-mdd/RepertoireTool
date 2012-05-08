@@ -25,6 +25,9 @@ from matplotlib.figure import Figure
 #import matplotlib.pyplot as plt
 from datetime import *
 
+import os
+from subprocess import Popen, PIPE
+
 
 from rep_db import *
 
@@ -36,7 +39,7 @@ class trendPlot(object):
         self.names = ['project 0','project 1']
         self.data = {}
         self.label = {}  #date
-        self.commit_ids = {}  #date
+        self.label2 = {}  #date
         self.datalen = 0
         self.get_plot_data(rep_db)
 
@@ -46,12 +49,12 @@ class trendPlot(object):
 
         data = []
         label = []
-        commit_ids = []
+        label2 = []
 
         for proj in (self.proj0,self.proj1):
             pcent_port = []
             x_label = []
-            cm_ids = []
+            label_2 = []
             for cm_date,trnd_obj in sorted(proj.iteritems()):
                 cm_id = trnd_obj.commitId
                 total_edit = rep_db.getTotalEdit(cm_id)
@@ -59,15 +62,15 @@ class trendPlot(object):
                 pcent_edit = (float(total_port)/total_edit)*100
                 pcent_port.append(pcent_edit)
                 x_label.append(cm_date)
-                cm_ids.append(cm_id)
+                label_2.append(trnd_obj.fileDist)
             data.append(pcent_port)
             label.append(x_label)
-            commit_ids.append(cm_ids)
+            label2.append(label_2)
 
         for i in (0,1):
             self.data[self.names[i]] = data[i]
             self.label[self.names[i]] = label[i]
-            self.commit_ids[self.names[i]] = commit_ids[i]
+            self.label2[self.names[i]] = label2[i]
             self.datalen += len(data[i])
 
         print data
@@ -90,8 +93,8 @@ class trendPlot(object):
     def get_series_label(self, name):
         return self.label[name]
 
-    def get_commit_ids(self, name):
-        return self.commit_ids[name]
+    def get_file_dist(self, name):
+        return self.label2[name]
 
 class Form(QMainWindow):
     #plot_obj is of type trendPlot
@@ -181,9 +184,20 @@ class Form(QMainWindow):
                 x_from = self.from_spin.value()
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
-                commit_ids = self.data.get_commit_ids(name)[x_from:x_to + 1]
-                print commit_ids
-                print series
+                file_dist = self.data.get_file_dist(name)[x_from:x_to + 1]
+                proj_file_dist = {}
+                print file_dist
+#                print series
+                for dist in file_dist:
+                    print dist
+                    for k,v in dist.iteritems():
+                        if proj_file_dist.has_key(k) == 0:
+                            proj_file_dist[k] = 0
+                        proj_file_dist[k] += int(v)
+                print proj_file_dist
+                #need to spawn a process and call this function
+                import file_dist as fd
+                fd.gen_scatter_plot(proj_file_dist)
 
 
     def on_button_press(self,event):
