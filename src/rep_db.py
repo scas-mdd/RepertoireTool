@@ -52,6 +52,7 @@ class CloneMeta:
         return "{0}\t({1}){2}\t({3}){4}\t{5}".format(
                 self.cloneId,self.lhsCommitId,self.lhs,self.rhsCommitId,self.rhs,self.metric)
 
+
 class RepDB:
     def __init__(self, commits, clones):
         # a mapping from commitId to CommitMeta
@@ -62,3 +63,38 @@ class RepDB:
     def __repr__(self):
         return "[RepDB: {0} and {1}]".format(self.commits, self.clones)
 
+    def getCommitMeta(self,commit_id):
+        return self.commits.get(commit_id,None)
+
+    def getCommitDate(self,commit_id):
+        commit_meta = self.commits.get(commit_id,None)
+        if commit_meta is not None:
+            return commit_meta.date
+        else:
+            return None
+
+    def getCommitAuthor(self,commit_id):
+        commit_meta = self.commits.get(commit_id,None)
+        if commit_meta is not None:
+            return commit_meta.author
+        else:
+            return None
+
+    def getProjId(self,commit_id):
+        commit_meta = self.commits.get(commit_id,None)
+        if commit_meta is not None:
+            return commit_meta.projId
+        else:
+            return None
+
+    def getTotalEdit(self,commit_id):
+        commit_meta = self.commits.get(commit_id,None)
+        if commit_meta is None:
+            return None
+        fileId2Meta = commit_meta.files
+        total_edit = 0
+        total_port = 0
+        for k,v in fileId2Meta.iteritems():
+            total_edit += int(v.numEdits)
+
+        return total_edit
