@@ -20,6 +20,9 @@ import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
+#import matplotlib.pyplot as plt
+from datetime import *
+
 
 from rep_db import *
 
@@ -30,8 +33,7 @@ class trendPlot(object):
         self.proj1 = proj1
         self.names = ['project 0','project 1']
         self.data = {}
-        self.label = {}  #commit_id
-        self.label1 = {} #date
+        self.label = {}  #date
         self.datalen = 0
         self.get_plot_data(rep_db)
 
@@ -41,21 +43,23 @@ class trendPlot(object):
 
         data = []
         label = []
-        label1 = []
 
         for proj in (self.proj0,self.proj1):
             pcent_port = []
-            commit_date = []
-            commit_id = []
-            for cm_id,trnd_obj in proj.iteritems():
+            x_label = []
+            for cm_date,trnd_obj in sorted(proj.iteritems()):
+                cm_id = trnd_obj.commitId
                 total_edit = rep_db.getTotalEdit(cm_id)
                 total_port = trnd_obj.metric
                 pcent_edit = (float(total_port)/total_edit)*100
                 pcent_port.append(pcent_edit)
+                x_label.append(cm_id)
             data.append(pcent_port)
+            label.append(x_label)
 
         for i in (0,1):
             self.data[self.names[i]] = data[i]
+            self.label[self.names[i]] = label[i]
             self.datalen += len(data[i])
 
     def series_names(self):
@@ -74,13 +78,14 @@ class trendPlot(object):
     def get_series_data(self, name):
         return self.data[name]
 
+    def get_series_label(self, name):
+        return self.label[name]
+
 class Form(QMainWindow):
     #plot_obj is of type trendPlot
     def __init__(self,plot_obj=None,parent=None):
         super(Form, self).__init__(parent)
         self.setWindowTitle('PyQt & matplotlib demo: Data plotting')
-#        self.filename = file_name
-#        self.data = DataHolder()
         self.series_list_model = QStandardItemModel()
 
         self.create_menu()
@@ -126,7 +131,10 @@ class Form(QMainWindow):
                 x_from = self.from_spin.value()
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
+                label = self.data.get_series_label(name)[x_from:x_to + 1]
                 self.axes.plot(range(len(series)), series, 'o-', label=name,picker=5)
+#                print label
+#                self.axes.plot_date(label, series, 'o-', label=name,picker=5)
 
         if has_series and self.legend_cb.isChecked():
             self.axes.legend()

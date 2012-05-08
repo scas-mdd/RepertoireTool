@@ -34,13 +34,15 @@ def showTrend(rep_db):
     proj0_trend = {} #map between commitId and trendObj
     proj1_trend = {}
 
-    #first create data points for all commitIds
+    #first create data points for all commit_dates
     for commit_id,commit_meta in commitId2Meta.iteritems():
-        print commit_id
+        commit_date = rep_db.getCommitDate(commit_id)
+        if commit_date is None:
+            continue
         proj_trend = proj1_trend
         if rep_db.getProjId(commit_id) == 'proj0':
             proj_trend = proj0_trend
-        proj_trend[commit_id] = trendObj(0,commit_meta)
+        proj_trend[commit_date] = trendObj(0,commit_meta)
 
     #populate data points with metric
     for clMeta in cloneList:
@@ -58,15 +60,17 @@ def showTrend(rep_db):
         print "%s,%s" % (lcommit_date,rcommit_date)
 
         commit_id = lhs_id
+        commit_date = lcommit_date
         if (lcommit_date <= rcommit_date):
             #porting is done to rhs project
             commit_id = rhs_id
+            commit_date = rcommit_date
 
         proj_trend = proj1_trend
         if rep_db.getProjId(commit_id) == 'proj0':
             proj_trend = proj0_trend
 
-        proj_trend[commit_id].metric += metric
+        proj_trend[commit_date].metric += metric
 
     trnd_plot = trendPlot(proj0_trend,proj1_trend,rep_db)
     trend_plot.draw(trnd_plot)
