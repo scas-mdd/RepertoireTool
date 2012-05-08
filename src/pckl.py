@@ -3,7 +3,7 @@ import sys
 import pickle
 import csv
 import re
-
+from datetime import *
 from rep_db import *
 
 fileId2Meta = {} #map between fileId and FileMeta
@@ -49,11 +49,13 @@ def pckl_commit_meta(commit_meta):
             file_id = row[column["file_id"]]
             proj_id = row[column["proj_id"]]
             commit_id = row[column["commit_id"]]
+            commit_date = datetime.strptime(row[column["date"]], "%m/%d/%y")
 
             fileMeta = fileId2Meta.get(file_id,None)
             fm = {row[column["file_id"]]:fileMeta}
-            cmMeta = CommitMeta(row[column["author"]],row[column["date"]],commit_id,fm,proj_id)
+            cmMeta = CommitMeta(row[column["author"]],commit_date,(proj_id,commit_id),fm,proj_id)
             print cmMeta
+
             commitId2Meta[(proj_id,commit_id)] = cmMeta
 
         rownum += 1
@@ -85,9 +87,9 @@ def pckl_clone_meta(clone_meta):
         if rownum is not 0:
             clone_id = row[0]
             lhs = row[1]
-            lhs_id = row[2]
+            lhs_id = ('proj0',row[2])
             rhs = row[3]
-            rhs_id = row[4]
+            rhs_id = ('proj1',row[4])
             metric = row[5]
             rseparator = re.compile("[.-]")
             fidx1,start1,end1 = rseparator.split(lhs.strip())
@@ -107,9 +109,9 @@ if __name__ == "__main__":
 
     pickle_out = sys.argv[1]
 
-    pckl_file_meta("data/fileMeta.csv")
-    pckl_commit_meta("data/commitMeta.csv")
-    pckl_clone_meta("data/cloneMeta.csv")
+    pckl_file_meta("../data/pcklData/fileMeta.csv")
+    pckl_commit_meta("../data/pcklData/commitMeta.csv")
+    pckl_clone_meta("../data/pcklData/cloneMeta.csv")
 
     global commitId2Meta
     global clones

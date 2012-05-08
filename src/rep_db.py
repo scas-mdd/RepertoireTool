@@ -38,6 +38,9 @@ class SideOfClone:
     def __repr__(self):
         return "{0}.{1}-{2}".format(self.fileId,self.startLine,self.endLine)
 
+    def get_val(self):
+        return (self.fileId,self.startLine,self.endLine)
+
 class CloneMeta:
 	# lhs and rhs are SideOfClone's
     def __init__(self, clone_id=0, lhs=None, lhs_commit_id=0, rhs=None, rhs_commit_id=0, metric=0):
@@ -96,5 +99,14 @@ class RepDB:
         total_port = 0
         for k,v in fileId2Meta.iteritems():
             total_edit += int(v.numEdits)
-
         return total_edit
+
+    def getFileName(self,commit_id,file_id):
+        commit_meta = self.commits.get(commit_id,None)
+        if commit_meta is not None:
+            fileId2Meta = commit_meta.files
+            file_meta = fileId2Meta.get(file_id,None)
+            if file_meta is not None:
+                return file_meta.origFile
+
+        return None

@@ -29,13 +29,14 @@ from datetime import *
 from rep_db import *
 
 class trendPlot(object):
-    #proj0, proj1 are map between commit_id and trendObj
+    #proj0, proj1 are map between commit_date and trendObj
     def __init__(self,proj0,proj1,rep_db):
         self.proj0 = proj0
         self.proj1 = proj1
         self.names = ['project 0','project 1']
         self.data = {}
         self.label = {}  #date
+        self.commit_ids = {}  #date
         self.datalen = 0
         self.get_plot_data(rep_db)
 
@@ -45,10 +46,12 @@ class trendPlot(object):
 
         data = []
         label = []
+        commit_ids = []
 
         for proj in (self.proj0,self.proj1):
             pcent_port = []
             x_label = []
+            cm_ids = []
             for cm_date,trnd_obj in sorted(proj.iteritems()):
                 cm_id = trnd_obj.commitId
                 total_edit = rep_db.getTotalEdit(cm_id)
@@ -56,12 +59,15 @@ class trendPlot(object):
                 pcent_edit = (float(total_port)/total_edit)*100
                 pcent_port.append(pcent_edit)
                 x_label.append(cm_date)
+                cm_ids.append(cm_id)
             data.append(pcent_port)
             label.append(x_label)
+            commit_ids.append(cm_ids)
 
         for i in (0,1):
             self.data[self.names[i]] = data[i]
             self.label[self.names[i]] = label[i]
+            self.commit_ids[self.names[i]] = commit_ids[i]
             self.datalen += len(data[i])
 
         print data
@@ -84,6 +90,9 @@ class trendPlot(object):
     def get_series_label(self, name):
         return self.label[name]
 
+    def get_commit_ids(self, name):
+        return self.commit_ids[name]
+
 class Form(QMainWindow):
     #plot_obj is of type trendPlot
     def __init__(self,plot_obj=None,parent=None):
@@ -98,11 +107,11 @@ class Form(QMainWindow):
         self.data = plot_obj
         self.load_data()
         self.update_ui()
-        self.on_show()
+#        self.on_show()
+
 
     def load_data(self):
         self.fill_series_list(self.data.series_names())
-#        self.status_text.setText("Loaded " + filename)
         self.update_ui()
 
     def update_ui(self):
@@ -135,9 +144,8 @@ class Form(QMainWindow):
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
                 label = self.data.get_series_label(name)[x_from:x_to + 1]
-#                self.axes.plot(range(len(series)), series, 'o-', label=name,picker=5)
 #                print label
-                self.axes.plot_date(label, series, 'o-', label=name,picker=5)
+                self.line, = self.axes.plot_date(label, series, 'o-', label=name,picker=5)
                 self.axes.set_xlabel('commit date')
                 self.axes.set_ylabel('percentage port')
                 ax = self.axes
@@ -153,23 +161,39 @@ class Form(QMainWindow):
                     tick.label1.set_horizontalalignment('center')
 #                    tick.label1.set_rotation(25)
                     tick.label1.set_fontsize(8)
-                """
-                for label in self.axes.xaxis.get_ticklabels():
-                    label.set_rotation(45)
-                    label.set_fontsize(9)
-                """
+
         if has_series and self.legend_cb.isChecked():
             self.axes.legend()
         self.canvas.draw()
+        self.bird_button.setVisible(True)
+
+
+    def on_bird(self):
+        print "pressed bird's button"
+
+        for row in range(self.series_list_model.rowCount()):
+            model_index = self.series_list_model.index(row, 0)
+            checked = self.series_list_model.data(model_index,
+                Qt.CheckStateRole) == QVariant(Qt.Checked)
+            name = str(self.series_list_model.data(model_index).toString())
+
+            if checked:
+                x_from = self.from_spin.value()
+                x_to = self.to_spin.value()
+                series = self.data.get_series_data(name)[x_from:x_to + 1]
+                commit_ids = self.data.get_commit_ids(name)[x_from:x_to + 1]
+                print commit_ids
+                print series
+
 
     def on_button_press(self,event):
         """ If the left mouse button is pressed: draw a little square.
         """
+        if not event.inaxes: return
         print 'you pressed', event.key, event.xdata, event.ydata
+        self.x_press = event.xdata
+        self.y_press = event.ydata
         tb = get_current_fig_manager().toolbar
-        x,y = event.xdata,event.ydata
-        self.axes.plot([x],[y],'rs')
-        self.canvas.draw()
 
         if event.button==1 and event.inaxes and tb.mode == '':
             x,y = event.xdata,event.ydata
@@ -178,18 +202,18 @@ class Form(QMainWindow):
 
 
     def on_button_release(self,event):
-        print 'you released', event.key, event.xdata, event.ydata
-
-    def on_motion_notify(self,event):
+        if not event.inaxes: return
         print 'you released', event.key, event.xdata, event.ydata
 
     def on_pick(self, event):
         print "on pick event"
+        if event.artist!= self.line: return True
+        N = len(event.ind)
+        if not N: return True
         thisline = event.artist
         xdata, ydata = thisline.get_data()
         ind = event.ind
         print 'on pick line:', zip(xdata[ind], ydata[ind])
-#        box_points = event.artist.get_bbox().get_points()
         msg = "You've clicked on data with coords:\n %s" % zip(xdata[ind], ydata[ind])
 
 
@@ -197,10 +221,9 @@ class Form(QMainWindow):
 
     def connect_events(self):
         self.canvas.mpl_connect('pick_event', self.on_pick)
-        gca().set_autoscale_on(False)
+#        gca().set_autoscale_on(False)
         self.canvas.mpl_connect('button_press_event', self.on_button_press)
-        self.canvas.mpl_connect('button_release_event', self.on_button_press)
-#        self.cidmotion = self.canvas.mpl_connect('motion_notify_event', self.on_motion_notify)
+        self.canvas.mpl_connect('button_release_event', self.on_button_release)
 
     def on_about(self):
         msg = __doc__
@@ -253,6 +276,10 @@ class Form(QMainWindow):
         self.show_button = QPushButton("&Show")
         self.connect(self.show_button, SIGNAL('clicked()'), self.on_show)
 
+        self.bird_button = QPushButton("&Bird's Eye")
+        self.connect(self.bird_button, SIGNAL('clicked()'), self.on_bird)
+        self.bird_button.setVisible(False)
+
         left_vbox = QVBoxLayout()
         left_vbox.addWidget(self.canvas)
         left_vbox.addWidget(self.mpl_toolbar)
@@ -263,6 +290,7 @@ class Form(QMainWindow):
         right_vbox.addLayout(spins_hbox)
         right_vbox.addWidget(self.legend_cb)
         right_vbox.addWidget(self.show_button)
+        right_vbox.addWidget(self.bird_button)
         right_vbox.addStretch(1)
 
         hbox = QHBoxLayout()

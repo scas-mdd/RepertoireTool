@@ -44,10 +44,12 @@ class RepWizard(QtGui.QWizard):
         proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
 #        os.system(cmd_str)
 
-#        trend.showTrend(self.rep_db)
 
     def showFileDist(self):
         print "showFileDist"
+        cmd_str = "./file_dist.py " + str(self.rep_db)
+#        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+        os.system(cmd_str)
 
     def showDevDist(self):
         print "showDevDist"
@@ -70,7 +72,7 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     myapp = RepWizard()
     if len(sys.argv) > 1 and 'braytest' == sys.argv[1]:
-        myapp.setTestValues('/home/bray/RepertoireTool/src/analysis/net_open.p')
+        myapp.setTestValues('/home/bray/RepertoireTool/src/analysis/pckl.p')
     myapp.show()
     sys.exit(app.exec_())
 
