@@ -16,6 +16,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from pylab import *
+import matplotlib.dates as dates
+import matplotlib.ticker as ticker
 import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
@@ -53,7 +55,7 @@ class trendPlot(object):
                 total_port = trnd_obj.metric
                 pcent_edit = (float(total_port)/total_edit)*100
                 pcent_port.append(pcent_edit)
-                x_label.append(cm_id)
+                x_label.append(cm_date)
             data.append(pcent_port)
             label.append(x_label)
 
@@ -62,6 +64,7 @@ class trendPlot(object):
             self.label[self.names[i]] = label[i]
             self.datalen += len(data[i])
 
+        print data
     def series_names(self):
         """ Names of the data series
         """
@@ -132,10 +135,29 @@ class Form(QMainWindow):
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
                 label = self.data.get_series_label(name)[x_from:x_to + 1]
-                self.axes.plot(range(len(series)), series, 'o-', label=name,picker=5)
+#                self.axes.plot(range(len(series)), series, 'o-', label=name,picker=5)
 #                print label
-#                self.axes.plot_date(label, series, 'o-', label=name,picker=5)
+                self.axes.plot_date(label, series, 'o-', label=name,picker=5)
+                self.axes.set_xlabel('commit date')
+                self.axes.set_ylabel('percentage port')
+                ax = self.axes
+                ax.xaxis.set_major_locator(dates.AutoDateLocator())
+                ax.xaxis.set_minor_locator(dates.MonthLocator(interval=3))
+#                ax.xaxis.set_minor_locator(dates.MonthLocator(bymonthday=30))
 
+                ax.xaxis.set_major_formatter(ticker.NullFormatter())
+                ax.xaxis.set_minor_formatter(dates.DateFormatter('%b %y'))
+                for tick in ax.xaxis.get_minor_ticks():
+                    tick.tick1line.set_markersize(0)
+                    tick.tick2line.set_markersize(0)
+                    tick.label1.set_horizontalalignment('center')
+#                    tick.label1.set_rotation(25)
+                    tick.label1.set_fontsize(8)
+                """
+                for label in self.axes.xaxis.get_ticklabels():
+                    label.set_rotation(45)
+                    label.set_fontsize(9)
+                """
         if has_series and self.legend_cb.isChecked():
             self.axes.legend()
         self.canvas.draw()
@@ -174,7 +196,7 @@ class Form(QMainWindow):
         QMessageBox.information(self, "Click!", msg)
 
     def connect_events(self):
-#        self.canvas.mpl_connect('pick_event', self.on_pick)
+        self.canvas.mpl_connect('pick_event', self.on_pick)
         gca().set_autoscale_on(False)
         self.canvas.mpl_connect('button_press_event', self.on_button_press)
         self.canvas.mpl_connect('button_release_event', self.on_button_press)
