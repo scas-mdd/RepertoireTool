@@ -48,11 +48,14 @@ class RepWizard(QtGui.QWizard):
     def showFileDist(self):
         print "showFileDist"
         cmd_str = "./file_dist.py " + str(self.rep_db)
-#        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
-        os.system(cmd_str)
+        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+#        os.system(cmd_str)
 
     def showDevDist(self):
         print "showDevDist"
+        cmd_str = "./dev_dist.py " + str(self.rep_db)
+        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+#        os.system(cmd_str)
 
     def showTimeDist(self):
         print "showTimeDist"
