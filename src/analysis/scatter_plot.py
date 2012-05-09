@@ -80,9 +80,7 @@ class Form(QMainWindow):
         self.create_status_bar()
 
         self.data = plot_obj
-#        self.load_data()
         self.update_ui()
-        self.show_button.setVisible(False)
         self.on_show()
 
     def load_data(self):
@@ -104,7 +102,7 @@ class Form(QMainWindow):
     def get_ticker(x,pos):
         return self.data.x.label[pos]
 
-    def on_show(self):
+    def on_show(self,isLabel=False):
         self.axes.clear()
         self.axes.grid(True)
 
@@ -112,26 +110,25 @@ class Form(QMainWindow):
 
         x_from = self.from_spin.value()
         x_to = self.to_spin.value()
-#        x_data = self.data.get_x_data(name)[x_from:x_to + 1]
-#        y_data = self.data.get_y_data(name)[x_from:x_to + 1]
         x_data = self.data.x.data
         y_data = self.data.y.data
         x_label = self.data.x.label
         y_label = self.data.y.label
         color_map = self.data.color_map
         self.axes.scatter(x_data,y_data,c=color_map,s=20,marker='o',picker=5)
-        print x_label
-#        self.axes.set_xticks(range(len(x_data)))
-        self.axes.set_xticklabels(x_label)
-#        self.axes.set_xlim(xmin=0)
-        self.axes.set_yticklabels(y_label)
-#        self.axes.set_ylim(0,len(y_label))
-#        self.axes.yaxis.set_major_formatter(ticker.NullFormatter())
+
+        if isLabel is False:
+            self.axes.xaxis.set_major_formatter(ticker.NullFormatter())
+            self.axes.yaxis.set_major_formatter(ticker.NullFormatter())
+        else:
+            self.axes.set_xticklabels(x_label, rotation=10)
+            self.axes.set_yticklabels(y_label, rotation=10)
+
         self.axes.xaxis.set_label_text("files of project 0")
         self.axes.yaxis.set_label_text("files of project 1")
 
         self.canvas.draw()
-        self.bird_button.setVisible(True)
+
 
 
     def on_bird(self):
@@ -162,16 +159,46 @@ class Form(QMainWindow):
                 import file_dist as fd
                 fd.gen_scatter_plot(proj_file_dist)
 
+    def on_label(self):
+        print "pressed label button"
+        self.on_show(True)
+
+    def on_display(self):
+        print "pressed file button"
+#        self.file_button.setVisible(False)
+#        self.log_label1.setText("")
+        print "selected files: proj0:%s , proj1:%s\n" % (self.file1,self.file2)
+        clones = self.data.fileHash.get((self.file1,self.file2),None)
+        print clones
+        for clone in clones:
+            cl1,cl2,metric = clone.split("\t")
+            fname1,cl1 = cl1.split(":")
+            start1,end1 = cl1.split("-")
+            fname2,cl2 = cl2.split(":")
+            start2,end2 = cl2.split("-")
+            clone1 = fname1 + ":" + start1 + ":" + end1
+            clone2 = fname2 + ":" + start2 + ":" + end2
+            args = "./display_diff.py " + clone1 + " " + clone2
+            print args
+            os.system(args)
+
 #---------------event handling routines--------#
+
     def on_button_press(self,event):
         """ If the left mouse button is pressed: draw a little square.
         """
         if not event.inaxes: return
         print 'you pressed', event.key, event.xdata, event.ydata
-        self.x_press = round(event.xdata)
-        self.y_press = round(event.ydata)
-        msg = "%s,%s" % (self.x_press,self.y_press)
-        QMessageBox.information(self,"Click!", msg)
+        x_press = round(event.xdata)
+        y_press = round(event.ydata)
+#        QMessageBox.information(self,"Click!", msg)
+        x_label = self.data.x.label
+        y_label = self.data.y.label
+        self.file1 = x_label[int(x_press)]
+        self.file2 = y_label[int(y_press)]
+        msg = "selected files: proj0:%s , proj1:%s\n" % (self.file1,self.file2)
+        self.log_label1.setText(msg)
+        self.file_button.setVisible(True)
 
 
     def connect_events(self):
@@ -206,9 +233,11 @@ class Form(QMainWindow):
 
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
 
-        log_label = QLabel("Data series:")
+        log_label = QLabel("\nSelect a data point to browse ported code")
         self.series_list_view = QListView()
         self.series_list_view.setModel(self.series_list_model)
+
+        self.log_label1 = QLabel("")
 
         spin_label1 = QLabel('X from')
         self.from_spin = QSpinBox()
@@ -225,24 +254,23 @@ class Form(QMainWindow):
         self.legend_cb = QCheckBox("Show L&egend")
         self.legend_cb.setChecked(False)
 
-        self.show_button = QPushButton("&Show")
-        self.connect(self.show_button, SIGNAL('clicked()'), self.on_show)
+        self.label_button = QPushButton("&Display Label")
+        self.connect(self.label_button, SIGNAL('clicked()'), self.on_label)
+        self.label_button.setVisible(True)
 
-        self.bird_button = QPushButton("&Bird's Eye")
-        self.connect(self.bird_button, SIGNAL('clicked()'), self.on_bird)
-        self.bird_button.setVisible(False)
+        self.file_button = QPushButton("&Display Portings")
+        self.connect(self.file_button, SIGNAL('clicked()'), self.on_display)
+        self.file_button.setVisible(False)
 
         left_vbox = QVBoxLayout()
         left_vbox.addWidget(self.canvas)
         left_vbox.addWidget(self.mpl_toolbar)
 
         right_vbox = QVBoxLayout()
-#        right_vbox.addWidget(log_label)
-#        right_vbox.addWidget(self.series_list_view)
-#        right_vbox.addLayout(spins_hbox)
-#        right_vbox.addWidget(self.legend_cb)
-        right_vbox.addWidget(self.show_button)
-        right_vbox.addWidget(self.bird_button)
+        right_vbox.addWidget(self.label_button)
+        right_vbox.addWidget(log_label)
+        right_vbox.addWidget(self.log_label1)
+        right_vbox.addWidget(self.file_button)
         right_vbox.addStretch(1)
 
         hbox = QHBoxLayout()

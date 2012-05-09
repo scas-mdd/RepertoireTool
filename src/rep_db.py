@@ -107,6 +107,6 @@ class RepDB:
             fileId2Meta = commit_meta.files
             file_meta = fileId2Meta.get(file_id,None)
             if file_meta is not None:
-                return file_meta.origFile
+                return file_meta.origFile,file_meta.diffFile
 
         return None

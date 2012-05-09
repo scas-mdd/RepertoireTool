@@ -26,8 +26,9 @@ def showFileDist(rep_db):
         rhs_id = clMeta.rhsCommitId
         metric = int(clMeta.metric)
 
-        lhs_file = rep_db.getFileName(lhs_id,fidx1)
-        rhs_file = rep_db.getFileName(rhs_id,fidx2)
+
+        lhs_file, lhs_diff = rep_db.getFileName(lhs_id,fidx1)
+        rhs_file, rhs_diff = rep_db.getFileName(rhs_id,fidx2)
 
         if lhs_file is None or rhs_file is None:
             continue
@@ -38,7 +39,7 @@ def showFileDist(rep_db):
         if file_dist.has_key(key) == 0 :
             file_dist[key] = []
 #        file_dist[key] += metric
-        file_dist[key].append("{0}-{1}\t{2}-{3}\t{4}".format(start1,end1,start2,end2,metric))
+        file_dist[key].append("{0}:{1}-{2}\t{3}:{4}-{5}\t{6}".format(lhs_diff,start1,end1,rhs_diff,start2,end2,metric))
 
     return file_dist
 
@@ -46,6 +47,7 @@ def gen_scatter_plot(filedist_hash):
 
     myPlot = scatterPlot()
 
+    myPlot.fileHash = filedist_hash
     for key, value in sorted(filedist_hash.iteritems(), key=lambda (k,v): (v,k)):
         file1,file2 = key
         metric = 0

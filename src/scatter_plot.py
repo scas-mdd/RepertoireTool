@@ -29,6 +29,28 @@ class scatterPlot:
             self.y.data.append(self.y.indx2label[y_val])
             self.color_map.append(value)
 
+    def set_file_hash(self,file_hash):
+        """
+        this is of the form
+        file_hash[(file1:file2)] = {start1-end1\tstart2-end2\tmetric}
+        """
+        self.fileHash = file_hash
+
+    def on_pick(self, event):
+        print "on pick event"
+        if event.artist!= self.line: return True
+        N = len(event.ind)
+        if not N: return True
+        thisline = event.artist
+        xdata, ydata = thisline.get_data()
+        ind = event.ind
+        print 'on pick line:', zip(xdata[ind], ydata[ind])
+        msg = "You've clicked on data with coords:\n %s" % zip(xdata[ind], ydata[ind])
+        QMessageBox.information(self, "Click!", msg)
+
+    def connect_events(self):
+        self.canvas.mpl_connect('pick_event', self.on_pick)
+
 
     def draw(self,figSize=10,markerSize=50):
         X = self.x.data
@@ -37,7 +59,9 @@ class scatterPlot:
         fig = plt.figure(1, figsize=(figSize,figSize))
         fig.suptitle('A Bird\'s eye view', fontsize=12)
 
-        plt.scatter(X,Y,c=self.color_map,s=markerSize,marker='o')
+#        self.connect_events()
+
+        plt.scatter(X,Y,c=self.color_map,s=markerSize,marker='o',picker='5')
         plt.xticks(range(len(X)),self.x.label,size='small')
         plt.yticks(range(len(Y)),self.y.label,size='small')
         plt.xlim(-1,len(self.x.label))
@@ -51,7 +75,6 @@ class scatterPlot:
 
 #-------------- test ---------------#
 if __name__ == "__main__":
-
     file_map = {('file1', 'File1'): 1, ('file1', 'File3'): 3,
             ('file2', 'File2'): 1,
             ('file3', 'File1'): 5, ('file3', 'File2'): 4, ('file3', 'File3'): 2
