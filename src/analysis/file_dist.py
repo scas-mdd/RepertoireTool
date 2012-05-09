@@ -26,7 +26,6 @@ def showFileDist(rep_db):
         rhs_id = clMeta.rhsCommitId
         metric = int(clMeta.metric)
 
-
         lhs_file, lhs_diff = rep_db.getFileName(lhs_id,fidx1)
         rhs_file, rhs_diff = rep_db.getFileName(rhs_id,fidx2)
 
