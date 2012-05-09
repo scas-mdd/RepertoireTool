@@ -4,12 +4,11 @@ import sys
 import pickle
 from rep_db import *
 
-from scatter_plot import scatterPlot
+from dev_plot import devPlot
 
 def showDevDist(rep_db):
 
     cloneList = rep_db.clones
-#    commitId2Meta = rep_db.commits
 
     dev_dist = {}
 
@@ -39,15 +38,18 @@ def showDevDist(rep_db):
 
     return dev_dist
 
-def gen_scatter_plot(filedist_hash):
+def gen_scatter_plot(devdist_hash):
 
-    myPlot = scatterPlot()
+    myPlot = devPlot()
 
-    for key, value in sorted(filedist_hash.iteritems(), key=lambda (k,v): (v,k)):
-        file1,file2 = key
-        myPlot.set_value(file1,file2,value)
+    for key, value in sorted(devdist_hash.iteritems(), key=lambda (k,v): (v,k)):
+        dev1,dev2 = key
+        myPlot.set_value(dev1,dev2,value)
 
-    myPlot.draw()
+    myPlot.set_dev_hash(devdist_hash)
+
+    import dev_plot
+    dev_plot.draw(myPlot)
 
 
 #---------------testing-----------------#
