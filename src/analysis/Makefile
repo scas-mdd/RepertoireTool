@@ -1,5 +1,6 @@
 GUI_FILES= \
-		ui/analysis.ui  
+		ui/analysis.ui \
+		ui/file_display.ui
 
 
 GUI_PYTHON_FILES := $(patsubst %.ui,%.py,$(GUI_FILES))

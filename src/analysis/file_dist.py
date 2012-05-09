@@ -6,6 +6,7 @@ import pickle
 from rep_db import *
 
 from scatter_plot import scatterPlot
+import scatter_plot
 
 def showFileDist(rep_db):
 
@@ -35,8 +36,9 @@ def showFileDist(rep_db):
         if rep_db.getProjId(lhs_id) == 'proj1':
             key = (rhs_file,lhs_file)
         if file_dist.has_key(key) == 0 :
-            file_dist[key] = 0
-        file_dist[key] += metric
+            file_dist[key] = []
+#        file_dist[key] += metric
+        file_dist[key].append("{0}-{1}\t{2}-{3}\t{4}".format(start1,end1,start2,end2,metric))
 
     return file_dist
 
@@ -46,9 +48,13 @@ def gen_scatter_plot(filedist_hash):
 
     for key, value in sorted(filedist_hash.iteritems(), key=lambda (k,v): (v,k)):
         file1,file2 = key
-        myPlot.set_value(file1,file2,value)
+        metric = 0
+        for i in value:
+            metric += int(i.split('\t')[2])
 
-    myPlot.draw()
+        myPlot.set_value(file1,file2,metric)
+
+    scatter_plot.draw(myPlot)
 
 
 #---------------testing-----------------#
@@ -64,5 +70,6 @@ if __name__ == "__main__":
     rep_db = pickle.load(open(sys.argv[1],"rb"))
 
     fileDist = showFileDist(rep_db)
+    print fileDist
     gen_scatter_plot(fileDist)
 
