@@ -10,10 +10,11 @@ class pieObj:
         self.labelList = labels
 
     def draw(self):
-        fig = plt.figure()
+        fig = plt.figure(facecolor='white', edgecolor='white')
         subplot_num = len(self.fracList)
 
         axes = [0] * subplot_num
+        name = ['project 0','project 1']
 
         for i in range(subplot_num):
             #nasty stuff, need to fix this
@@ -22,6 +23,7 @@ class pieObj:
             else:
                 pos = 4
             axes[i] = fig.add_subplot(subplot_num,subplot_num,pos)
+            axes[i].set_title(name[i])
             patches, texts, autotexts = axes[i].pie(self.fracList[i], labels=self.labelList[i],autopct='%1.1f%%', shadow =False)
             proptease = fm.FontProperties()
             proptease.set_size('small')
@@ -29,8 +31,6 @@ class pieObj:
             setp(texts, fontproperties=proptease)
             rcParams['legend.fontsize'] = 7.0
         plt.show()
-
-
 
 #-------------test---------------#
 if __name__ == "__main__":

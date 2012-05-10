@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 """
-Series of data are loaded from a .csv file, and their names are
-displayed in a checkable list view. The user can select the series
-it wants from the list and plot them on a matplotlib canvas.
-
-Use the sample .csv file that comes with the script for an example
-of data series.
-
-Eli Bendersky (eliben@gmail.com)
+shows distribution of developers who ported codes
+from on project to another
 License: this code is in the public domain
-Last modified: 18.05.2009
+Last modified: 05.09.2012
 """
 import sys, os, csv
 from PyQt4.QtCore import *
@@ -172,6 +166,8 @@ class Form(QMainWindow):
 
         self.axes.xaxis.set_label_text("developers who ported to project 0")
         self.axes.yaxis.set_label_text("developers who ported to project 1")
+        self.axes.xaxis.set_label_position('top')
+        self.axes.yaxis.set_label_position('right')
 
         self.canvas.draw()
 
@@ -240,7 +236,7 @@ class Form(QMainWindow):
 
     def on_about(self):
         msg = __doc__
-        QMessageBox.about(self, "About the demo", msg.strip())
+        QMessageBox.about(self, "Developer Distribution", msg.strip())
 
     def fill_series_list(self, names):
         self.series_list_model.clear()
@@ -324,7 +320,7 @@ class Form(QMainWindow):
         self.statusBar().addWidget(self.status_text, 1)
 
     def create_menu(self):
-        self.file_menu = self.menuBar().addMenu("&File")
+#        self.file_menu = self.menuBar().addMenu("&File")
 
         quit_action = self.create_action("&Quit", slot=self.close,
             shortcut="Ctrl+Q", tip="Close the application")
@@ -332,7 +328,7 @@ class Form(QMainWindow):
         self.help_menu = self.menuBar().addMenu("&Help")
         about_action = self.create_action("&About",
             shortcut='F1', slot=self.on_about,
-            tip='About the demo')
+            tip='Developer Distribution')
 
         self.add_actions(self.help_menu, (about_action,))
 

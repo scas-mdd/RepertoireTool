@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 """
-Series of data are loaded from a .csv file, and their names are
-displayed in a checkable list view. The user can select the series
-it wants from the list and plot them on a matplotlib canvas.
-
-Use the sample .csv file that comes with the script for an example
-of data series.
-
-Eli Bendersky (eliben@gmail.com)
+A scattered diagram of files where porting is done
 License: this code is in the public domain
-Last modified: 18.05.2009
+Last modified: 05.09.2010
 """
 import sys, os, csv
 from PyQt4.QtCore import *
@@ -115,17 +108,18 @@ class Form(QMainWindow):
         x_label = self.data.x.label
         y_label = self.data.y.label
         color_map = self.data.color_map
-        self.axes.scatter(x_data,y_data,c=color_map,s=20,marker='o',picker=5)
+        self.axes.scatter(x_data,y_data,c=color_map,s=30,marker='o',picker=5)
 
         if isLabel is False:
             self.axes.xaxis.set_major_formatter(ticker.NullFormatter())
             self.axes.yaxis.set_major_formatter(ticker.NullFormatter())
         else:
-            self.axes.set_xticklabels(x_label, rotation=10)
-            self.axes.set_yticklabels(y_label, rotation=10)
+            self.axes.set_xticklabels(x_label, rotation=0)
+            self.axes.set_yticklabels(y_label, rotation=0)
 
-        self.axes.xaxis.set_label_text("files of project 0")
-        self.axes.yaxis.set_label_text("files of project 1")
+        self.axes.xaxis.set_label_text("files from project 0")
+        self.axes.yaxis.set_label_text("files from project 1")
+        self.axes.yaxis.set_label_position('right')
 
         self.canvas.draw()
 
@@ -233,7 +227,7 @@ class Form(QMainWindow):
 
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
 
-        log_label = QLabel("\nSelect a data point to browse ported code")
+        log_label = QLabel("\nTo browse ported code,\n Please select  a data point\n ")
         self.series_list_view = QListView()
         self.series_list_view.setModel(self.series_list_model)
 
@@ -265,11 +259,11 @@ class Form(QMainWindow):
         left_vbox = QVBoxLayout()
         left_vbox.addWidget(self.canvas)
         left_vbox.addWidget(self.mpl_toolbar)
+        left_vbox.addWidget(self.log_label1)
 
         right_vbox = QVBoxLayout()
         right_vbox.addWidget(self.label_button)
         right_vbox.addWidget(log_label)
-        right_vbox.addWidget(self.log_label1)
         right_vbox.addWidget(self.file_button)
         right_vbox.addStretch(1)
 
@@ -285,7 +279,7 @@ class Form(QMainWindow):
         self.statusBar().addWidget(self.status_text, 1)
 
     def create_menu(self):
-        self.file_menu = self.menuBar().addMenu("&File")
+#        self.file_menu = self.menuBar().addMenu("&File")
 
         quit_action = self.create_action("&Quit", slot=self.close,
             shortcut="Ctrl+Q", tip="Close the application")

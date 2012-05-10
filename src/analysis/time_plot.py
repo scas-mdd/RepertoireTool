@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 """
-Shows extent of porting:
-percentage of ported edits in each patch in each commit
-License: this code is in the public domain
-Last modified: 18.05.2009
+Shows the delay to port a patch from one project to another
+
+Last modified: 05.09.2012
 """
 import sys, os, csv
 from PyQt4.QtCore import *
@@ -16,7 +15,6 @@ import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
-#import matplotlib.pyplot as plt
 from datetime import *
 
 import os
@@ -25,49 +23,61 @@ from subprocess import Popen, PIPE
 
 from rep_db import *
 
-class trendPlot(object):
+class timePlot(object):
     #proj0, proj1 are map between commit_date and trendObj
-    def __init__(self,proj0,proj1,rep_db):
+    def __init__(self,proj0,proj1):
         self.proj0 = proj0
         self.proj1 = proj1
-        self.names = ['project 0','project 1']
-        self.data = {}
-        self.label = {}  #date
-        self.label2 = {}  #date
-        self.datalen = 0
-        self.get_plot_data(rep_db)
+        self.x = []
+        self.y = []
+        self.y_cum_list = []
+        self.total_port = [sum(proj0.values()),sum(proj1.values())]
 
-    def get_plot_data(self,rep_db):
+        self.names = ['project 0','project 1']
+        self.x_data = {}
+        self.y_data = {}
+        self.y_cuml = {}
+        self.datalen = 0
+
+        self.set_plot_data()
+        self.set_cuml_data()
+
+        for i in (0,1):
+            self.x_data[self.names[i]] = self.x[i]
+            self.y_data[self.names[i]] = self.y[i]
+            self.y_cuml[self.names[i]] = self.y_cum_list[i]
+            self.datalen += len(self.x[i])
+
+    def set_plot_data(self):
         if self.proj0 is None or self.proj1 is None:
             return None
 
-        data = []
-        label = []
-        label2 = []
-
+        proj_num = 0
         for proj in (self.proj0,self.proj1):
-            pcent_port = []
-            x_label = []
-            label_2 = []
-            for cm_date,trnd_obj in sorted(proj.iteritems()):
-                cm_id = trnd_obj.commitId
-                total_edit = rep_db.getTotalEdit(cm_id)
-                total_port = trnd_obj.metric
-                pcent_edit = (float(total_port)/total_edit)*100
-                pcent_port.append(pcent_edit)
-                x_label.append(cm_date)
-                label_2.append(trnd_obj.fileDist)
-            data.append(pcent_port)
-            label.append(x_label)
-            label2.append(label_2)
+            x = []
+            y = []
+            for days,port in sorted(proj.iteritems()):
+                x.append(days)
+                pcent_port = (float(port)*100)/self.total_port[proj_num]
+                y.append(pcent_port)
+            self.x.append(x)
+            self.y.append(y)
+            proj_num += 1
 
-        for i in (0,1):
-            self.data[self.names[i]] = data[i]
-            self.label[self.names[i]] = label[i]
-            self.label2[self.names[i]] = label2[i]
-            self.datalen += len(data[i])
+        print self.x
+        print self.y
 
-        print data
+
+    def set_cuml_data(self):
+        for i in range(len(self.y)):
+            proj = self.y[i]
+            cuml = 0
+            cuml_proj = []
+            for index in range(0,len(proj)):
+                cuml += proj[index]
+                cuml_proj.append(cuml)
+            self.y_cum_list.append(cuml_proj)
+
     def series_names(self):
         """ Names of the data series
         """
@@ -79,22 +89,22 @@ class trendPlot(object):
         return self.datalen
 
     def series_count(self):
-        return len(self.data)
+        return len(self.x_data)
 
     def get_series_data(self, name):
-        return self.data[name]
+        return self.y_data[name]
+
+    def get_cuml_data(self, name):
+        return self.y_cuml[name]
 
     def get_series_label(self, name):
-        return self.label[name]
-
-    def get_file_dist(self, name):
-        return self.label2[name]
+        return self.x_data[name]
 
 class Form(QMainWindow):
     #plot_obj is of type trendPlot
     def __init__(self,plot_obj=None,parent=None):
         super(Form, self).__init__(parent)
-        self.setWindowTitle('Extent of Porting')
+        self.setWindowTitle('Porting Latecy: How long it takes a patch to propagate')
         self.series_list_model = QStandardItemModel()
 
         self.create_menu()
@@ -123,7 +133,7 @@ class Form(QMainWindow):
             for w in [self.from_spin, self.to_spin]:
                 w.setEnabled(False)
 
-    def on_show(self):
+    def on_show(self,isCuml=False):
         self.axes.clear()
         self.axes.grid(True)
 
@@ -139,60 +149,39 @@ class Form(QMainWindow):
                 has_series = True
                 x_from = self.from_spin.value()
                 x_to = self.to_spin.value()
-                series = self.data.get_series_data(name)[x_from:x_to + 1]
-                label = self.data.get_series_label(name)[x_from:x_to + 1]
-#                print label
-                self.line, = self.axes.plot_date(label, series, 'o-', label=name,picker=5)
-                setp(self.line, linewidth=3)
-                self.axes.set_xlabel('commit dates')
-                self.axes.set_ylabel('% of portes edits')
-                ax = self.axes
-                ax.xaxis.set_major_locator(dates.AutoDateLocator())
-                ax.xaxis.set_minor_locator(dates.MonthLocator(interval=3))
-#                ax.xaxis.set_minor_locator(dates.MonthLocator(bymonthday=30))
 
-                ax.xaxis.set_major_formatter(ticker.NullFormatter())
-                ax.xaxis.set_minor_formatter(dates.DateFormatter('%b %y'))
+                if isCuml is False:
+                    series = self.data.get_series_data(name)[x_from:x_to + 1]
+                else:
+                    series = self.data.get_cuml_data(name)[x_from:x_to + 1]
+
+                label = self.data.get_series_label(name)[x_from:x_to + 1]
+                print series
+                print label
+#                print label
+                self.line, = self.axes.plot(label, series, 'o-', label=name)
+                self.axes.set_xlabel('number of days')
+                self.axes.set_ylabel('% of ported edits')
+                ax = self.axes
+
                 for tick in ax.xaxis.get_minor_ticks():
                     tick.tick1line.set_markersize(0)
                     tick.tick2line.set_markersize(0)
                     tick.label1.set_horizontalalignment('center')
-#                    tick.label1.set_rotation(25)
                     tick.label1.set_fontsize(8)
 
         if has_series and self.legend_cb.isChecked():
-            self.axes.legend(loc='upper left')
+            if isCuml is True:
+                self.axes.legend(loc=4)
+            else:
+                self.axes.legend(loc='upper center')
         self.canvas.draw()
-        self.bird_button.setVisible(True)
+        self.cuml_button.setVisible(True)
 
 
-    def on_bird(self):
-        print "pressed bird's button"
-
-        for row in range(self.series_list_model.rowCount()):
-            model_index = self.series_list_model.index(row, 0)
-            checked = self.series_list_model.data(model_index,
-                Qt.CheckStateRole) == QVariant(Qt.Checked)
-            name = str(self.series_list_model.data(model_index).toString())
-
-            if checked:
-                x_from = self.from_spin.value()
-                x_to = self.to_spin.value()
-                series = self.data.get_series_data(name)[x_from:x_to + 1]
-                file_dist = self.data.get_file_dist(name)[x_from:x_to + 1]
-                proj_file_dist = {}
-                print file_dist
-#                print series
-                for dist in file_dist:
-                    print dist
-                    for k,v in dist.iteritems():
-                        if proj_file_dist.has_key(k) == 0:
-                            proj_file_dist[k] = 0
-                        proj_file_dist[k] += int(v)
-                print proj_file_dist
-                #need to spawn a process and call this function
-                import file_dist as fd
-                fd.gen_scatter_plot(proj_file_dist)
+    def on_cuml(self):
+        print "pressed cuml's button"
+        self.on_show(True)
 
 
     def on_button_press(self,event):
@@ -236,7 +225,7 @@ class Form(QMainWindow):
 
     def on_about(self):
         msg = __doc__
-        QMessageBox.about(self, "About the demo", msg.strip())
+        QMessageBox.about(self, "Porting Latency", msg.strip())
 
     def fill_series_list(self, names):
         self.series_list_model.clear()
@@ -282,12 +271,12 @@ class Form(QMainWindow):
         self.legend_cb = QCheckBox("Show L&egend")
         self.legend_cb.setChecked(False)
 
-        self.show_button = QPushButton("&Show")
+        self.show_button = QPushButton("Porting &Latency")
         self.connect(self.show_button, SIGNAL('clicked()'), self.on_show)
 
-        self.bird_button = QPushButton("&Bird's Eye")
-        self.connect(self.bird_button, SIGNAL('clicked()'), self.on_bird)
-        self.bird_button.setVisible(False)
+        self.cuml_button = QPushButton("Cumulative Distribution")
+        self.connect(self.cuml_button, SIGNAL('clicked()'), self.on_cuml)
+        self.cuml_button.setVisible(True)
 
         left_vbox = QVBoxLayout()
         left_vbox.addWidget(self.canvas)
@@ -299,7 +288,7 @@ class Form(QMainWindow):
         right_vbox.addLayout(spins_hbox)
         right_vbox.addWidget(self.legend_cb)
         right_vbox.addWidget(self.show_button)
-        right_vbox.addWidget(self.bird_button)
+        right_vbox.addWidget(self.cuml_button)
         right_vbox.addStretch(1)
 
         hbox = QHBoxLayout()
@@ -327,7 +316,7 @@ class Form(QMainWindow):
         self.help_menu = self.menuBar().addMenu("&Help")
         about_action = self.create_action("&About",
             shortcut='F1', slot=self.on_about,
-            tip='About the demo')
+            tip='About Porting Latency')
 
         self.add_actions(self.help_menu, (about_action,))
 
@@ -356,27 +345,18 @@ class Form(QMainWindow):
         return action
 
 
-def draw(trnd_plot):
-    app = QApplication(['trend_plot.py'])
-    print trnd_plot.names
-    print trnd_plot.data[trnd_plot.names[0]]
-    print trnd_plot.data[trnd_plot.names[1]]
-    form = Form(trnd_plot)
+def draw(time_plot):
+    app = QApplication(['time_plot.py'])
+    print time_plot.names
+    print time_plot.x_data[time_plot.names[0]]
+    print time_plot.y_data[time_plot.names[0]]
+    print time_plot.x_data[time_plot.names[1]]
+    print time_plot.y_data[time_plot.names[1]]
+    form = Form(time_plot)
     form.show()
     app.exec_()
 
 
 
 # --------------------- test -----------------------#
-
-def main():
-    app = QApplication(sys.argv)
-#   form = Form("/home/bray/Downloads/pyqt_dataplot_demo/qt_mpl_data.csv")
-    form = Form("net_open.csv")
-    form.show()
-    app.exec_()
-
-
-if __name__ == "__main__":
-    print sys.argv
-    main()
+#should be called from time_dist.py
