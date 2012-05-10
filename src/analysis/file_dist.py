@@ -75,6 +75,8 @@ def gen_scatter_plot(filedist_hash):
     for key, value in sorted(filedist_hash.iteritems(), key=lambda (k,v): (v,k)):
         file1,file2 = key
         metric = 0
+        print "value"
+        print value
         for i in value:
 #            metric += int(i.split('\t')[2])
             print i

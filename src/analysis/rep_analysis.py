@@ -59,6 +59,9 @@ class RepWizard(QtGui.QWizard):
 
     def showTimeDist(self):
         print "showTimeDist"
+        cmd_str = "./time_dist.py " + str(self.rep_db)
+        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+#        os.system(cmd_str)
 
     def validatePage0(self):
         return True

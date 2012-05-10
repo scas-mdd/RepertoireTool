@@ -8,6 +8,8 @@ from datetime import *
 
 #from trend_plot import trendObj
 from trend_plot import trendPlot
+from clone import Clone
+
 
 import trend_plot
 
@@ -75,10 +77,10 @@ def showTrend(rep_db):
             proj_trend = proj0_trend
 
         proj_trend[commit_date].metric += metric
-
         #file mapping
         fidx1, start1, end1 = clMeta.lhs.get_val()
         fidx2, start2, end2 = clMeta.rhs.get_val()
+        """
         lhs_file = rep_db.getFileName(lhs_id,fidx1)
         rhs_file = rep_db.getFileName(rhs_id,fidx2)
 
@@ -93,6 +95,36 @@ def showTrend(rep_db):
         if file_dist.has_key(key) == 0 :
             file_dist[key] = 0
         file_dist[key] += metric
+        """
+        #todo: should be refactored in a concided form
+        lhs_file, lhs_diff = rep_db.getFileName(lhs_id,fidx1)
+        rhs_file, rhs_diff = rep_db.getFileName(rhs_id,fidx2)
+        lhs_author = rep_db.getCommitAuthor(lhs_id)
+        rhs_author = rep_db.getCommitAuthor(rhs_id)
+        lhs_date = rep_db.getCommitDate(lhs_id)
+        rhs_date = rep_db.getCommitDate(rhs_id)
+        lhs_projid = rep_db.getProjId(lhs_id)
+        rhs_projid = rep_db.getProjId(rhs_id)
+
+        lhs_clone = Clone(lhs_projid,lhs_file,lhs_diff,start1,end1,lhs_author,lhs_date)
+        rhs_clone = Clone(rhs_projid,rhs_file,rhs_diff,start2,end2,rhs_author,rhs_date)
+
+        if lhs_file is None or rhs_file is None:
+            continue
+
+        key = (lhs_file,rhs_file)
+        val = (metric,lhs_clone,rhs_clone)
+
+        if rep_db.getProjId(lhs_id) == 'proj1':
+            key = (rhs_file,lhs_file)
+            val = (metric,rhs_clone,lhs_clone)
+
+        file_dist = proj_trend[commit_date].fileDist
+        if file_dist.has_key(key) == 0 :
+            file_dist[key] = []
+
+        file_dist[key].append(val)
+
 
     trnd_plot = trendPlot(proj0_trend,proj1_trend,rep_db)
     trend_plot.draw(trnd_plot)

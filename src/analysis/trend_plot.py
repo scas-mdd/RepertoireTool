@@ -20,6 +20,7 @@ from matplotlib.figure import Figure
 from datetime import *
 
 import os
+import pickle
 from subprocess import Popen, PIPE
 
 
@@ -179,20 +180,31 @@ class Form(QMainWindow):
                 x_from = self.from_spin.value()
                 x_to = self.to_spin.value()
                 series = self.data.get_series_data(name)[x_from:x_to + 1]
-                file_dist = self.data.get_file_dist(name)[x_from:x_to + 1]
+                file_list = self.data.get_file_dist(name)[x_from:x_to + 1]
+                print "file_list:"
+                print file_list
+
+                #convert file_list to a hash
                 proj_file_dist = {}
-                print file_dist
 #                print series
-                for dist in file_dist:
+                for dist in file_list:
+                    print "dist:"
                     print dist
                     for k,v in dist.iteritems():
+                        print "v:"
+                        print v
                         if proj_file_dist.has_key(k) == 0:
-                            proj_file_dist[k] = 0
-                        proj_file_dist[k] += int(v)
+                            proj_file_dist[k] = []
+                        proj_file_dist[k].append(v[0])
                 print proj_file_dist
+
+                pickle.dump( proj_file_dist, open( "trend.pkl", "wn" ) )
+                cmd_str = "./file_dist1.py " + "trend.pkl"
+                os.system(cmd_str)
+#                proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
                 #need to spawn a process and call this function
-                import file_dist as fd
-                fd.gen_scatter_plot(proj_file_dist)
+#                import file_dist as fd
+#                fd.gen_scatter_plot(proj_file_dist)
 
 
     def on_button_press(self,event):
