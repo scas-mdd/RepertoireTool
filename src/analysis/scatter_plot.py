@@ -19,6 +19,7 @@ from datetime import *
 
 import os
 from subprocess import Popen, PIPE
+import pickle
 
 class graphObj:
     def __init__(self):
@@ -124,35 +125,6 @@ class Form(QMainWindow):
         self.canvas.draw()
 
 
-
-    def on_bird(self):
-        print "pressed bird's button"
-
-        for row in range(self.series_list_model.rowCount()):
-            model_index = self.series_list_model.index(row, 0)
-            checked = self.series_list_model.data(model_index,
-                Qt.CheckStateRole) == QVariant(Qt.Checked)
-            name = str(self.series_list_model.data(model_index).toString())
-
-            if checked:
-                x_from = self.from_spin.value()
-                x_to = self.to_spin.value()
-                series = self.data.get_series_data(name)[x_from:x_to + 1]
-                file_dist = self.data.get_file_dist(name)[x_from:x_to + 1]
-                proj_file_dist = {}
-                print file_dist
-#                print series
-                for dist in file_dist:
-                    print dist
-                    for k,v in dist.iteritems():
-                        if proj_file_dist.has_key(k) == 0:
-                            proj_file_dist[k] = 0
-                        proj_file_dist[k] += int(v)
-                print proj_file_dist
-                #need to spawn a process and call this function
-                import file_dist as fd
-                fd.gen_scatter_plot(proj_file_dist)
-
     def on_label(self):
         print "pressed label button"
         self.on_show(True)
@@ -164,6 +136,13 @@ class Form(QMainWindow):
         print "selected files: proj0:%s , proj1:%s\n" % (self.file1,self.file2)
         clones = self.data.fileHash.get((self.file1,self.file2),None)
         print clones
+        pickle.dump( clones, open( "temp.pkl", "wn" ) )
+        cmd_str = "./display_rep.py " + "temp.pkl"
+#        os.system(cmd_str)
+        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+#        for line in iter(proc.stdout.readline,''):
+#            print line
+        """
         for clone in clones:
             cl1,cl2,metric = clone.split("\t")
             fname1,cl1 = cl1.split(":")
@@ -175,6 +154,7 @@ class Form(QMainWindow):
             args = "./display_diff.py " + clone1 + " " + clone2
             print args
             os.system(args)
+        """
 
 #---------------event handling routines--------#
 

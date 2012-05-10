@@ -1,5 +1,6 @@
 GUI_FILES= \
 		ui/analysis.ui \
+		ui/rep_output.ui \
 		ui/file_display.ui
 
 
