@@ -26,16 +26,19 @@ Steps for producing the database:
   - either Git or Mercurial for now
 5. Select a path for that version control system
   - This is the root directory of the repository for Git and Mercurial
-6. Select a time window for project 1
+6. Select file extensions for C/C++, headers, and Java files
+  - Repertoire uses these extensions to decide what files it will look for ports in
+  - Repertoire won't understand your non-Cish looking languages, so don't try to hack it
+7. Select a time window for project 1
   - Repertoire is going to extract all commits inside that time window
   - Obviously picking huge time windows is going to make the analysis run more slowly
-7. Repeat 4-6 for the second project
-8. Select that you do indeed want to analyze the given data
-9. Wait for analysis to complete
+8. Repeat 4-7 for the second project
+9. Select that you do indeed want to analyze the given data
+10. Wait for analysis to complete
   - Errors will create ugly stack traces in the terminal
   - Errors will also cause the background worker thread to die
   - Errors mean you kill have to force kill the process
-10. When analysis is complete, look inside the directory created by Repertoire in the working directory
+11. When analysis is complete, look inside the directory created by Repertoire in the working directory
   - There will be a pickle file called rep_db.pickle
   - That pickle file is the input to the analysis step
 
