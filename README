@@ -1,6 +1,6 @@
 Guide to Repertoire:
 
-Repertoire is used in two stages.  First you have to build a repertoire database, and then you can run analysis on the database.  The database is an efficient representation of the ports between two code bases.  However, if you have not compiling Repertoire, then you'll need to do that first.
+Repertoire is used in two stages.  First you have to build a repertoire database, and then you can run analysis on the database.  The database is an efficient representation of the ports between two code bases.  However, if you have not compiled Repertoire, then you'll need to do that first.
 
 To compile Repertoire:
 1. Install dependencies
