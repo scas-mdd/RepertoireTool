@@ -1,0 +1,41 @@
+Steps for running the analysis:
+
+1. Run rep_analysis.py
+2. Select pickle file that represents a Repertoire database.
+3. Press Next
+4. It gives four analysis option:
+
+  1. Porting Trend
+  2. File distribution
+  3. Developer's Distribution
+  4. Timing Analysis
+
+Porting Trend
+==============
+1. Select the project you are analyzing: project 0 or/and project 1  
+2. You can select some time peiod to analyze (X from to to)
+3. Bird's eye view shows a birds eye view of file distribution for the selected time period
+
+File Distribution
+==================
+1. Shows a scatter plot of file distribution, i.e., a point is plotted at
+(x,y) if there is a port from file x to file y or vice versa.
+2. We do not show file names as label, as for large number of files it clutters the display. User can see labels, if "Display Label" is pressed.
+3. If any point on the diagram is pressed, corresponding files names can also be seen at the bottom.
+4. To browse the ported code between selected file pair, press "Display porting"
+5. A window will show all the ported code between the two files, along with developer's data and commit date.
+6. On selecting any clone from clone list, user can browse the ported edit.
+
+Developer's Distribution
+=========================
+1. Shows a scatter plot of developer distribution, i.e., a point is plotted at (x,y) if there devlopers at x port code from developer at y, and vice versa.
+2. We do not show developers names as label initially, as it clutters the display. User can see labels however, if "Display Label" is pressed.
+3. If any point on the diagram is pressed, corresponding developer names can be seen at the bottom.
+4. To check developer's contribution in ported edits, please select project0 and/or project 1 from right hand window. Then press "Display Developer's Porting Statistics"
+  
+Timing Analysis
+===============
+1. Select project 0 and/or 1 to see port latency. 
+2. Press "Porting latency" button.
+3. A cumulative distribution of the latency can also be seen by pressing "Cumulative Distribution" button.
+4. User can also seletct a time frame by specifying "X from" and "to".
