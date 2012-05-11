@@ -1,3 +1,82 @@
-To build the UI, you'll need pyuic4 in your path.  Simply run make from src.
+Guide to Repertoire:
 
-To run, it's just ./driver.py from the src directory.  Have fun!
+Repertoire is used in two stages.  First you have to build a repertoire database, and then you can run analysis on the database.  The database is an efficient representation of the ports between two code bases.  However, if you have not compiling Repertoire, then you'll need to do that first.
+
+To compile Repertoire:
+1. Install dependencies
+  - Python 2.7
+  - Qt 4.x
+  - pyuic4
+  - This definitely works on dolphin and Ubuntu 12.04
+2. Run 'make' from src/
+3. Run 'make' from src/analysis/
+4. Obtain a working copy of ccFinder for your distribution
+  - Make sure it actually works by running 'ccfx d cpp somefile.cpp'
+  - If that gives you errors then it's not working
+
+Steps for producing the database:
+1. Run src/run_vcs_flow.py
+  - A wizard will pop up, select "Start a new project"
+2. Pick a working directory
+  - Repertoire will create a subdirectory to put its files in
+3. Give a path to a working ccFinder executable
+  - You may optionally pick a token size to pass to ccFinder
+  - A token size is the number of lexical elements that must be similar between two edits before they can be called clones, and hence ports
+4. Pick a version control system for project 1
+  - either Git or Mercurial for now
+5. Select a path for that version control system
+  - This is the root directory of the repository for Git and Mercurial
+6. Select a time window for project 1
+  - Repertoire is going to extract all commits inside that time window
+  - Obviously picking huge time windows is going to make the analysis run more slowly
+7. Repeat 4-6 for the second project
+8. Select that you do indeed want to analyze the given data
+9. Wait for analysis to complete
+  - Errors will create ugly stack traces in the terminal
+  - Errors will also cause the background worker thread to die
+  - Errors mean you kill have to force kill the process
+10. When analysis is complete, look inside the directory created by Repertoire in the working directory
+  - There will be a pickle file called rep_db.pickle
+  - That pickle file is the input to the analysis step
+
+Steps for running the analysis:
+
+1. Run rep_analysis.py
+2. Select pickle file that represents a Repertoire database.
+3. Press Next
+4. It gives four analysis option:
+
+  1. Porting Trend
+  2. File distribution
+  3. Developer's Distribution
+  4. Timing Analysis
+
+Porting Trend
+==============
+1. Select the project you are analyzing: project 0 or/and project 1  
+2. You can select some time peiod to analyze (X from to to)
+3. Bird's eye view shows a birds eye view of file distribution for the selected time period
+
+File Distribution
+==================
+1. Shows a scatter plot of file distribution, i.e., a point is plotted at
+(x,y) if there is a port from file x to file y or vice versa.
+2. We do not show file names as label, as for large number of files it clutters the display. User can see labels, if "Display Label" is pressed.
+3. If any point on the diagram is pressed, corresponding files names can also be seen at the bottom.
+4. To browse the ported code between selected file pair, press "Display porting"
+5. A window will show all the ported code between the two files, along with developer's data and commit date.
+6. On selecting any clone from clone list, user can browse the ported edit.
+
+Developer's Distribution
+=========================
+1. Shows a scatter plot of developer distribution, i.e., a point is plotted at (x,y) if there devlopers at x port code from developer at y, and vice versa.
+2. We do not show developers names as label initially, as it clutters the display. User can see labels however, if "Display Label" is pressed.
+3. If any point on the diagram is pressed, corresponding developer names can be seen at the bottom.
+4. To check developer's contribution in ported edits, please select project0 and/or project 1 from right hand window. Then press "Display Developer's Porting Statistics"
+  
+Timing Analysis
+===============
+1. Select project 0 and/or 1 to see port latency. 
+2. Press "Porting latency" button.
+3. A cumulative distribution of the latency can also be seen by pressing "Cumulative Distribution" button.
+4. User can also seletct a time frame by specifying "X from" and "to".
