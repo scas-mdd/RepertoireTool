@@ -198,6 +198,7 @@ class Form(QMainWindow):
 
         self.dpi = 100
         self.fig = Figure((6.0, 4.0), dpi=self.dpi)
+        self.fig.suptitle('File Distribution', fontsize=15)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
 

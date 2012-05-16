@@ -11,6 +11,7 @@ class pieObj:
 
     def draw(self):
         fig = plt.figure(facecolor='white', edgecolor='white')
+        fig.suptitle('Developer Distribution\n\n', fontsize=20)
         subplot_num = len(self.fracList)
 
         axes = [0] * subplot_num
@@ -26,10 +27,10 @@ class pieObj:
             axes[i].set_title(name[i])
             patches, texts, autotexts = axes[i].pie(self.fracList[i], labels=self.labelList[i],autopct='%1.1f%%', shadow =False)
             proptease = fm.FontProperties()
-            proptease.set_size('small')
+            proptease.set_size('large')
             setp(autotexts, fontproperties=proptease)
             setp(texts, fontproperties=proptease)
-            rcParams['legend.fontsize'] = 7.0
+            rcParams['legend.fontsize'] = 12.0
         plt.show()
 
 #-------------test---------------#

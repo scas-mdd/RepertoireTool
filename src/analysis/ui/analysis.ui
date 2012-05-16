@@ -134,7 +134,7 @@ Please select a pickle file where Repertoire analysis is saved.</string>
      </rect>
     </property>
     <property name="text">
-     <string>Trend</string>
+     <string>Porting Extent</string>
     </property>
    </widget>
    <widget class="QPushButton" name="devButton">
@@ -147,7 +147,7 @@ Please select a pickle file where Repertoire analysis is saved.</string>
      </rect>
     </property>
     <property name="text">
-     <string>developer's activity</string>
+     <string>Developer Distribution</string>
     </property>
    </widget>
    <widget class="QLabel" name="trendLabel">
@@ -160,7 +160,7 @@ Please select a pickle file where Repertoire analysis is saved.</string>
      </rect>
     </property>
     <property name="text">
-     <string>Porting Trend</string>
+     <string>Extent of Porting</string>
     </property>
    </widget>
    <widget class="QLabel" name="fileLabel">
@@ -186,7 +186,7 @@ Please select a pickle file where Repertoire analysis is saved.</string>
      </rect>
     </property>
     <property name="text">
-     <string>Developer's Distribution</string>
+     <string>Developer Distribution</string>
     </property>
    </widget>
    <widget class="QLabel" name="timeLabel_2">
@@ -199,7 +199,7 @@ Please select a pickle file where Repertoire analysis is saved.</string>
      </rect>
     </property>
     <property name="text">
-     <string>Timing Analysis</string>
+     <string>Porting Latency</string>
     </property>
    </widget>
    <widget class="QPushButton" name="timeButton">
@@ -212,7 +212,7 @@ Please select a pickle file where Repertoire analysis is saved.</string>
      </rect>
     </property>
     <property name="text">
-     <string>timing analysis</string>
+     <string>Porting Latency</string>
     </property>
    </widget>
    <widget class="QLabel" name="welcomeLabel_2">

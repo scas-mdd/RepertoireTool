@@ -16,7 +16,7 @@ import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from datetime import *
 
 import os
@@ -266,6 +266,7 @@ class Form(QMainWindow):
 
         self.dpi = 100
         self.fig = Figure((6.0, 4.0), dpi=self.dpi)
+        self.fig.suptitle('Extent of Porting', fontsize=15)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
 
