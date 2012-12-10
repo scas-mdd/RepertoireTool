@@ -1,0 +1,357 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CCFXEntryPoint	ccfx_entrypoint.py	/^class CCFXEntryPoint:$/;"	c
+CCFXInputConverter	ccfx_input_conv.py	/^class CCFXInputConverter:$/;"	c
+CCFXMetaData	ccfx_output_conv.py	/^class CCFXMetaData:$/;"	c
+CCFXMetaMapping	ccfx_output_conv.py	/^class CCFXMetaMapping:$/;"	c
+CCFX_DIR	cfg.py	/^CCFX_DIR = \/home\/bray\/SealLab\/RepertoireTool1\/ccFinder\/ccfx$/;"	v
+CXX	path_builder.py	/^    CXX = 'cxx'$/;"	v	class:LangDecider
+CXX_SUFF	path_builder.py	/^    CXX_SUFF = '.' + CXX$/;"	v	class:LangDecider
+Clone	output_parser.py	/^Clone = namedtuple('Clone', ['fidx', 'start', 'end', 'ops'])$/;"	v
+CloneMeta	rep_db.py	/^class CloneMeta:$/;"	c
+ClonePair	output_parser.py	/^ClonePair = namedtuple('ClonePair', ['clone1', 'clone2', 'metric'])$/;"	v
+Commit	vcs_types.py	/^class Commit:$/;"	c
+CommitMeta	rep_db.py	/^class CommitMeta:$/;"	c
+Cvs	vcs_types.py	/^    Cvs = 4$/;"	v	class:VcsTypes
+DEBUG	config.py	/^DEBUG = 0$/;"	v
+DISPLAY_CONTEXT	config.py	/^DISPLAY_CONTEXT = 30$/;"	v
+DiffFilter	difffilter.py	/^class DiffFilter:$/;"	c
+EnableMultithreadedDump	vcs_interface.py	/^    EnableMultithreadedDump = True$/;"	v	class:VcsInterface
+Enum	ccfx_input_conv.py	/^class Enum(set):$/;"	c
+FileMeta	rep_db.py	/^class FileMeta:$/;"	c
+GUI_FILES	Makefile	/^GUI_FILES= \\$/;"	m
+GUI_PYTHON_FILES	Makefile	/^GUI_PYTHON_FILES := $(patsubst %.ui,%.py,$(GUI_FILES))$/;"	m
+Git	vcs_types.py	/^    Git = 1$/;"	v	class:VcsTypes
+GitInterface	vcs_git.py	/^class GitInterface(VcsInterface):$/;"	c
+HXX	path_builder.py	/^    HXX = 'hxx'$/;"	v	class:LangDecider
+HXX_SUFF	path_builder.py	/^    HXX_SUFF = '.' + HXX$/;"	v	class:LangDecider
+Hg	vcs_types.py	/^    Hg  = 3$/;"	v	class:VcsTypes
+HgInterface	vcs_hg.py	/^class HgInterface(VcsInterface):$/;"	c
+IntegerWrapper	app_model1.py	/^class IntegerWrapper:$/;"	c
+JAVA	path_builder.py	/^    JAVA = 'java'$/;"	v	class:LangDecider
+JAVA_SUFF	path_builder.py	/^    JAVA_SUFF = '.' + JAVA$/;"	v	class:LangDecider
+LangDecider	path_builder.py	/^class LangDecider:$/;"	c
+NGRAM	config.py	/^NGRAM = 1$/;"	v
+NGram	ngram.py	/^class NGram(set):$/;"	c
+NONE	path_builder.py	/^    NONE = 'none'$/;"	v	class:LangDecider
+NoInterface	vcs_none.py	/^class NoInterface(VcsInterface):$/;"	c
+NoType	vcs_types.py	/^    NoType = 0$/;"	v	class:VcsTypes
+NumDumpingThreads	vcs_interface.py	/^    NumDumpingThreads = 10$/;"	v	class:VcsInterface
+OUTPUT_DIR	cfg.py	/^OUTPUT_DIR = .$/;"	v
+Operation	output_parser.py	/^Operation = namedtuple('Operation', ['line', 'op'])$/;"	v
+OutputTuple	db_generator.py	/^OutputTuple = namedtuple("OutputTuple", ["lang", "is_new", "output"])$/;"	v
+PROJ0	path_builder.py	/^    PROJ0 = 'proj0'$/;"	v	class:PathBuilder
+PROJ0_DIR	cfg.py	/^PROJ0_DIR = \/home\/bray\/SPA\/BSDs\/FreeBSD\/diffs\/src_sys_dev$/;"	v
+PROJ1	path_builder.py	/^    PROJ1 = 'proj1'$/;"	v	class:PathBuilder
+PROJ1_DIR	cfg.py	/^PROJ1_DIR = \/home\/bray\/SPA\/BSDs\/NetBSD\/diffs\/src_sys_dev$/;"	v
+PathBuilder	path_builder.py	/^class PathBuilder:$/;"	c
+Proj0	path_builder.py	/^    Proj0 = PROJ0$/;"	v	class:PathBuilder
+Proj0	rep_db.py	/^    Proj0 = 0$/;"	v	class:CommitMeta
+Proj1	path_builder.py	/^    Proj1 = PROJ1$/;"	v	class:PathBuilder
+Proj1	rep_db.py	/^    Proj1 = 1$/;"	v	class:CommitMeta
+RepCmdLine	Repertoire1.py	/^class RepCmdLine():$/;"	c
+RepCmdLine	Repertoire_bck.py	/^class RepCmdLine():$/;"	c
+RepDB	rep_db.py	/^class RepDB:$/;"	c
+RepDBPopulator	db_generator.py	/^class RepDBPopulator:$/;"	c
+RepDisplay	display_diff.py	/^class RepDisplay(QtGui.QMainWindow):$/;"	c
+RepDriver	rep_driver.py	/^class RepDriver():$/;"	c
+RepDriver	simple_driver.py	/^class RepDriver():$/;"	c
+RepModel	rep_model.py	/^class RepModel:$/;"	c
+RepOutput	display_rep.py	/^class RepOutput(QtGui.QMainWindow):$/;"	c
+RepertoireModel	app_model1.py	/^class RepertoireModel:$/;"	c
+RepertoireOutput	output_parser.py	/^class RepertoireOutput:$/;"	c
+SUFFIX	cfg.py	/^SUFFIX = '.cxx', '.hxx', '.java'$/;"	v
+SideOfClone	rep_db.py	/^class SideOfClone:$/;"	c
+Svn	vcs_types.py	/^    Svn = 2$/;"	v	class:VcsTypes
+TOKEN_SIZE	cfg.py	/^TOKEN_SIZE = 40$/;"	v
+ValidateProjDir	rep_model.py	/^    def ValidateProjDir(path):$/;"	m	class:RepModel
+VcsInterface	vcs_interface.py	/^class VcsInterface:$/;"	c
+VcsTypes	vcs_types.py	/^class VcsTypes:$/;"	c
+VerifyCCFinderPath	rep_model.py	/^    def VerifyCCFinderPath(ccfx_path):$/;"	m	class:RepModel
+VerifyGitRepo	vcs_git.py	/^    def VerifyGitRepo(git_path):$/;"	m	class:GitInterface
+VerifyHgRepo	vcs_hg.py	/^    def VerifyHgRepo(path):$/;"	m	class:HgInterface
+VerifyNoRepo	vcs_none.py	/^    def VerifyNoRepo(git_path):$/;"	m	class:NoInterface
+__call__	Repertoire1.py	/^    def __call__(self, parser, namespace, values, option_string=None):$/;"	m	class:customAction	file:
+__call__	Repertoire_bck.py	/^    def __call__(self, parser, namespace, values, option_string=None):$/;"	m	class:customAction	file:
+__getattr__	ccfx_input_conv.py	/^    def __getattr__(self, name):$/;"	m	class:Enum	file:
+__getstate__	path_builder.py	/^    def __getstate__(self):$/;"	m	class:PathBuilder	file:
+__init__	Repertoire1.py	/^    def __init__(self):$/;"	m	class:RepCmdLine
+__init__	Repertoire1.py	/^    def __init__(self,$/;"	m	class:customAction
+__init__	Repertoire_bck.py	/^    def __init__(self):$/;"	m	class:RepCmdLine
+__init__	Repertoire_bck.py	/^    def __init__(self,$/;"	m	class:customAction
+__init__	app_model1.py	/^    def __init__(self):$/;"	m	class:RepertoireModel
+__init__	app_model1.py	/^    def __init__(self, value = 0):$/;"	m	class:IntegerWrapper
+__init__	ccfx_entrypoint.py	/^    def __init__(self, ccfx_path = '.\/ccfx', token_sz = 40, file_sep = True, grp_sep = True):$/;"	m	class:CCFXEntryPoint
+__init__	ccfx_output_conv.py	/^    def __init__(self):$/;"	m	class:CCFXMetaMapping
+__init__	ccfx_output_conv.py	/^    def __init__(self, ccfx_input, ccfx_preprocessed, filter_conv, filter_output):$/;"	m	class:CCFXMetaData
+__init__	db_generator.py	/^    def __init__(self, path_builder):$/;"	m	class:RepDBPopulator
+__init__	difffilter.py	/^    def __init__(self, extension):$/;"	m	class:DiffFilter
+__init__	display_diff.py	/^    def __init__(self, clone1, clone2, parent=None):$/;"	m	class:RepDisplay
+__init__	display_rep.py	/^    def __init__(self, rep_out_path, parent=None):$/;"	m	class:RepOutput
+__init__	ngram.py	/^   def __init__(self, items=[], threshold=0.0, warp=1.0, iconv=None,$/;"	m	class:NGram
+__init__	operation_filter.py	/^    def __init__(self, op1=[], op2=[]):$/;"	m	class:opFilter
+__init__	output_parser.py	/^    def __init__(self):$/;"	m	class:RepertoireOutput
+__init__	path_builder.py	/^    def __init__(self, c_suff, h_suff, j_suff):$/;"	m	class:LangDecider
+__init__	path_builder.py	/^    def __init__(self, root, force_clean = False, super_safe_mode = False):$/;"	m	class:PathBuilder
+__init__	rep_db.py	/^    def __init__(self, author, date, commit_id, files, proj_id):$/;"	m	class:CommitMeta
+__init__	rep_db.py	/^    def __init__(self, clone_id=0, lhs=None, lhs_commit_id=0, rhs=None, rhs_commit_id=0, metric=0):$/;"	m	class:CloneMeta
+__init__	rep_db.py	/^    def __init__(self, commits, clones):$/;"	m	class:RepDB
+__init__	rep_db.py	/^    def __init__(self, diff_file, orig_file, num_edits, num_ports):$/;"	m	class:FileMeta
+__init__	rep_db.py	/^    def __init__(self, file_id, start_line, end_line):$/;"	m	class:SideOfClone
+__init__	rep_model.py	/^    def __init__(self):$/;"	m	class:RepModel
+__init__	vcs_git.py	/^    def __init__(self, proj, path_builder):$/;"	m	class:GitInterface
+__init__	vcs_hg.py	/^    def __init__(self, proj, path_builder):$/;"	m	class:HgInterface
+__init__	vcs_interface.py	/^    def __init__(self, proj, path_builder):$/;"	m	class:VcsInterface
+__init__	vcs_none.py	/^    def __init__(self, proj, path_builder):$/;"	m	class:NoInterface
+__init__	vcs_types.py	/^    def __init__(self, proj, type=VcsTypes.Git):$/;"	m	class:Commit
+__repr__	rep_db.py	/^    def __repr__(self):$/;"	m	class:CloneMeta	file:
+__repr__	rep_db.py	/^    def __repr__(self):$/;"	m	class:CommitMeta	file:
+__repr__	rep_db.py	/^    def __repr__(self):$/;"	m	class:FileMeta	file:
+__repr__	rep_db.py	/^    def __repr__(self):$/;"	m	class:RepDB	file:
+__repr__	rep_db.py	/^    def __repr__(self):$/;"	m	class:SideOfClone	file:
+__repr__	vcs_types.py	/^    def __repr__(self):$/;"	m	class:Commit	file:
+__setstate__	path_builder.py	/^    def __setstate__(self, a_dict):$/;"	m	class:PathBuilder	file:
+__str__	rep_model.py	/^    def __str__(self):$/;"	m	class:RepModel	file:
+__str__	vcs_types.py	/^    def __str__(self):$/;"	m	class:Commit	file:
+__version__	ngram.py	/^__version__ = (3, 0, 0)$/;"	v
+add	ngram.py	/^   def add(self, item):$/;"	m	class:NGram
+addFile	ccfx_output_conv.py	/^    def addFile(self, meta):$/;"	m	class:CCFXMetaMapping
+addFile	vcs_types.py	/^    def addFile(self, orig_name, dump_name):$/;"	m	class:Commit
+app	Repertoire1.py	/^    app = RepCmdLine()$/;"	v	class:customAction
+app	display_diff.py	/^    app = QtGui.QApplication(sys.argv)$/;"	v
+app	display_rep.py	/^    app = QtGui.QApplication(sys.argv)$/;"	v
+app_model	Repertoire1.py	/^    app_model = app.model$/;"	v	class:customAction
+ccfx_dir	Repertoire.py	/^				ccfx_dir = line.split("CCFX_DIR = ")[1]$/;"	v
+ccfx_dir	Repertoire.py~	/^				ccfx_dir = line.split("CCFX_DIR = ")[1]$/;"	v
+ccfx_dir	Repertoire_bck.py	/^				ccfx_dir = line.split("CCFX_DIR = ")[1]$/;"	v	class:customAction
+cfgFile	Repertoire.py	/^	cfgFile = ""$/;"	v
+cfgFile	Repertoire.py	/^	cfgFile = sys.argv[1]$/;"	v
+cfgFile	Repertoire.py~	/^	cfgFile = ""$/;"	v
+cfgFile	Repertoire.py~	/^	cfgFile = sys.argv[1]$/;"	v
+cfgFile	Repertoire_bck.py	/^	cfgFile = ""$/;"	v	class:customAction
+cfgFile	Repertoire_bck.py	/^	cfgFile = sys.argv[1]$/;"	v	class:customAction
+class_string	rep_model.py	/^		class_string = "projDir : " + self.projDir + "\\n"$/;"	v	class:RepModel
+clone1	display_diff.py	/^    clone1 = sys.argv[1]$/;"	v
+clone2	display_diff.py	/^    clone2 = sys.argv[2]$/;"	v
+closeDisplay	display_diff.py	/^    def closeDisplay(self):$/;"	m	class:RepDisplay
+closeDisplay	display_rep.py	/^    def closeDisplay(self):$/;"	m	class:RepOutput
+cmd_str	ccfx_entrypoint.py	/^		cmd_str = ($/;"	v	class:CCFXEntryPoint
+compare	ngram.py	/^   def compare(s1, s2, **kwargs):$/;"	m	class:NGram
+compareList	operation_filter.py	/^    def compareList(self,list1,list2):$/;"	m	class:opFilter
+contextMenuEvent	display_rep.py	/^    def contextMenuEvent(self,event):$/;"	m	class:RepOutput
+convWriter	ccfx_input_conv.py	/^    convWriter = None$/;"	v	class:CCFXInputConverter
+conv_str	ccfx_entrypoint.py	/^		conv_str = '{0} p {1} > {2}'.format(self.ccfxPath, tmp_out_path, out_path)$/;"	v	class:CCFXEntryPoint
+convert	ccfx_input_conv.py	/^    def convert(self, path_builder, reportProgress = None):$/;"	m	class:CCFXInputConverter
+convert_ccfx_output	ccfx_output_conv.py	/^def convert_ccfx_output(pb, proj, lang, is_new):$/;"	f
+copy	ngram.py	/^   def copy(self, items=None):$/;"	m	class:NGram
+count_diff_edits	vcs_interface.py	/^def count_diff_edits(path):$/;"	f
+customAction	Repertoire1.py	/^class customAction(argparse.Action):$/;"	c
+customAction	Repertoire_bck.py	/^class customAction(argparse.Action):$/;"	c
+db	simple_driver.py	/^			db = rep_populator.generateDB(proj0, proj1)$/;"	v	class:RepDriver
+db_file	simple_driver.py	/^			db_file = open(path_builder.getDBPathAndName(), 'w')$/;"	v	class:RepDriver
+difference_update	ngram.py	/^   def difference_update(self, other):$/;"	m	class:NGram
+discard	ngram.py	/^   def discard(self, item):$/;"	m	class:NGram
+display	display_diff.py	/^    def display(self):$/;"	m	class:RepDisplay
+dstLineNum	ccfx_input_conv.py	/^    dstLineNum = 0$/;"	v	class:CCFXInputConverter
+dumpCommits	vcs_interface.py	/^    def dumpCommits(self):$/;"	m	class:VcsInterface
+dump_commit	vcs_git.py	/^def dump_commit(args):$/;"	f
+dump_commit	vcs_hg.py	/^def dump_commit(args):$/;"	f
+dump_commit	vcs_none.py	/^def dump_commit(args):$/;"	f
+f	Repertoire.py	/^	f = open(cfgFile, 'r')$/;"	v
+f	Repertoire.py~	/^	f = open(cfgFile, 'r')$/;"	v
+f	Repertoire_bck.py	/^	f = open(cfgFile, 'r')$/;"	v	class:customAction
+filterByOp	operation_filter.py	/^    def filterByOp(self,clone):$/;"	m	class:opFilter
+filterDiff	difffilter.py	/^    def filterDiff(self, inpath, outpath):$/;"	m	class:DiffFilter
+filterDiffFile	app_model1.py	/^    def filterDiffFile(self,diff_file):$/;"	m	class:RepertoireModel
+filterDiffProj	app_model1.py	/^    def filterDiffProj(self,proj):$/;"	m	class:RepertoireModel
+final_status	simple_driver.py	/^			final_status = True$/;"	v	class:RepDriver
+findPrepFileFor	path_builder.py	/^    def findPrepFileFor(self, path, name):$/;"	m	class:PathBuilder
+firstPass	db_generator.py	/^    def firstPass(self, output, clones, file2fidx, fidx2numports):$/;"	m	class:RepDBPopulator
+generateDB	db_generator.py	/^    def generateDB(self, vcs1, vcs2):$/;"	m	class:RepDBPopulator
+getCCFXInputPath	path_builder.py	/^    def getCCFXInputPath(self, proj, lang, is_new):$/;"	m	class:PathBuilder
+getCCFXOutputFileName	path_builder.py	/^    def getCCFXOutputFileName(self, lang, is_new, is_tmp):$/;"	m	class:PathBuilder
+getCCFXOutputPath	path_builder.py	/^    def getCCFXOutputPath(self):$/;"	m	class:PathBuilder
+getCCXFPrepPath	path_builder.py	/^    def getCCXFPrepPath(self, proj, lang, is_new):$/;"	m	class:PathBuilder
+getCcfxPath	rep_model.py	/^    def getCcfxPath(self):$/;"	m	class:RepModel
+getCcfxTokenSize	rep_model.py	/^    def getCcfxTokenSize(self):$/;"	m	class:RepModel
+getCloneIter	output_parser.py	/^    def getCloneIter(self):$/;"	m	class:RepertoireOutput
+getCommitAuthor	rep_db.py	/^    def getCommitAuthor(self,commit_id):$/;"	m	class:RepDB
+getCommitDate	rep_db.py	/^    def getCommitDate(self,commit_id):$/;"	m	class:RepDB
+getCommitMeta	rep_db.py	/^    def getCommitMeta(self,commit_id):$/;"	m	class:RepDB
+getDBPathAndName	path_builder.py	/^    def getDBPathAndName(self):$/;"	m	class:PathBuilder
+getDecoratedId	vcs_types.py	/^    def getDecoratedId(self):$/;"	m	class:Commit
+getDiffPath	path_builder.py	/^    def getDiffPath(self, proj, lang):$/;"	m	class:PathBuilder
+getDumpFunc	vcs_git.py	/^    def getDumpFunc(self):$/;"	m	class:GitInterface
+getDumpFunc	vcs_hg.py	/^    def getDumpFunc(self):$/;"	m	class:HgInterface
+getDumpFunc	vcs_interface.py	/^    def getDumpFunc(self):$/;"	m	class:VcsInterface
+getDumpFunc	vcs_none.py	/^    def getDumpFunc(self):$/;"	m	class:NoInterface
+getFileIter	output_parser.py	/^    def getFileIter(self):$/;"	m	class:RepertoireOutput
+getFileName	rep_db.py	/^    def getFileName(self,commit_id,file_id):$/;"	m	class:RepDB
+getFilePath	output_parser.py	/^    def getFilePath(self, fidx):$/;"	m	class:RepertoireOutput
+getFilter	path_builder.py	/^    def getFilter(self, lang):$/;"	m	class:LangDecider
+getFilterOutputPath	path_builder.py	/^    def getFilterOutputPath(self, proj, lang):$/;"	m	class:PathBuilder
+getLang	path_builder.py	/^    def getLang(self, path):$/;"	m	class:LangDecider
+getLangDecider	vcs_interface.py	/^    def getLangDecider(self):$/;"	m	class:VcsInterface
+getLineMapPath	path_builder.py	/^    def getLineMapPath(self, proj, lang, is_new):$/;"	m	class:PathBuilder
+getMetaForPath	ccfx_output_conv.py	/^    def getMetaForPath(self, input_path):$/;"	m	class:CCFXMetaMapping
+getMetas	ccfx_output_conv.py	/^    def getMetas(self):$/;"	m	class:CCFXMetaMapping
+getModelPathAndName	path_builder.py	/^    def getModelPathAndName(self):$/;"	m	class:PathBuilder
+getPathBuilder	rep_model.py	/^    def getPathBuilder(self):$/;"	m	class:RepModel
+getProj	rep_model.py	/^    def getProj(self, proj):$/;"	m	class:RepModel
+getProjDir	rep_model.py	/^    def getProjDir(self):$/;"	m	class:RepModel
+getProjId	rep_db.py	/^    def getProjId(self,commit_id):$/;"	m	class:RepDB
+getProjRoot	path_builder.py	/^    def getProjRoot(self, proj):$/;"	m	class:PathBuilder
+getRepertoireOutputFileName	path_builder.py	/^    def getRepertoireOutputFileName(self, lang, is_new):$/;"	m	class:PathBuilder
+getRepertoireOutputPath	path_builder.py	/^    def getRepertoireOutputPath(self, lang, is_new):$/;"	m	class:PathBuilder
+getRepoRoot	vcs_interface.py	/^    def getRepoRoot(self):$/;"	m	class:VcsInterface
+getSuffix	path_builder.py	/^    def getSuffix(self):$/;"	m	class:LangDecider
+getSuffixFor	path_builder.py	/^    def getSuffixFor(self, lang):$/;"	m	class:LangDecider
+getTotalEdit	rep_db.py	/^    def getTotalEdit(self,commit_id):$/;"	m	class:RepDB
+getVcsSuffix	rep_model.py	/^    def getVcsSuffix(self, proj):$/;"	m	class:RepModel
+getVcsSuffix	vcs_interface.py	/^    def getVcsSuffix(self):$/;"	m	class:VcsInterface
+getVcsTimeWindow	rep_model.py	/^    def getVcsTimeWindow(self, proj):$/;"	m	class:RepModel
+getVcsType	vcs_git.py	/^    def getVcsType(self):$/;"	m	class:GitInterface
+getVcsType	vcs_hg.py	/^    def getVcsType(self):$/;"	m	class:HgInterface
+getVcsType	vcs_interface.py	/^    def getVcsType(self):$/;"	m	class:VcsInterface
+getVcsType	vcs_none.py	/^    def getVcsType(self):$/;"	m	class:NoInterface
+getVcsWhen	vcs_interface.py	/^    def getVcsWhen(self):$/;"	m	class:VcsInterface
+getVcsWhere	rep_model.py	/^    def getVcsWhere(self, proj):$/;"	m	class:RepModel
+getVcsWhich	rep_model.py	/^    def getVcsWhich(self, proj):$/;"	m	class:RepModel
+get_val	rep_db.py	/^    def get_val(self):$/;"	m	class:SideOfClone
+hasChanged	operation_filter.py	/^    def hasChanged(self,opStr):$/;"	m	class:opFilter
+hasInputPath	ccfx_output_conv.py	/^    def hasInputPath(self, input_path):$/;"	m	class:CCFXMetaMapping
+hashOps	operation_filter.py	/^    def hashOps(self):$/;"	m	class:opFilter
+have_new_c	simple_driver.py	/^			have_new_c = ccfx.processPairs(LangDecider.CXX, True)$/;"	v	class:RepDriver
+have_new_h	simple_driver.py	/^			have_new_h = ccfx.processPairs(LangDecider.HXX, True)$/;"	v	class:RepDriver
+have_new_j	simple_driver.py	/^			have_new_j = ccfx.processPairs(LangDecider.JAVA, True)$/;"	v	class:RepDriver
+have_old_c	simple_driver.py	/^			have_old_c = ccfx.processPairs(LangDecider.CXX, False)$/;"	v	class:RepDriver
+have_old_h	simple_driver.py	/^			have_old_h = ccfx.processPairs(LangDecider.HXX, False)$/;"	v	class:RepDriver
+have_old_j	simple_driver.py	/^			have_old_j = ccfx.processPairs(LangDecider.JAVA, False)$/;"	v	class:RepDriver
+identity	ngram.py	/^      def identity(x):$/;"	f	function:NGram.__init__
+incr	app_model1.py	/^    def incr(self):$/;"	m	class:IntegerWrapper
+inf	display_rep.py	/^    inf = sys.argv[1]$/;"	v
+intersection_update	ngram.py	/^   def intersection_update(self, other):$/;"	m	class:NGram
+isCode	path_builder.py	/^    def isCode(self, path):$/;"	m	class:LangDecider
+isComplete	rep_model.py	/^    def isComplete(self):$/;"	m	class:RepModel
+isComplete	vcs_interface.py	/^    def isComplete(self):$/;"	m	class:VcsInterface
+is_new	simple_driver.py	/^			is_new = False$/;"	v	class:RepDriver
+is_new	simple_driver.py	/^			is_new = True$/;"	v	class:RepDriver
+items_sharing_ngrams	ngram.py	/^   def items_sharing_ngrams(self, query):$/;"	m	class:NGram
+lang	ccfx_entrypoint.py	/^			lang = 'cpp'$/;"	v	class:CCFXEntryPoint
+lang	simple_driver.py	/^			lang = LangDecider.CXX$/;"	v	class:RepDriver
+lang	simple_driver.py	/^			lang = LangDecider.HXX$/;"	v	class:RepDriver
+lang	simple_driver.py	/^			lang = LangDecider.JAVA$/;"	v	class:RepDriver
+line	Repertoire.py	/^		line = line.rstrip("\\n")$/;"	v
+line	Repertoire.py~	/^		line = line.rstrip("\\n")$/;"	v
+line	Repertoire_bck.py	/^		line = line.rstrip("\\n")$/;"	v	class:customAction
+load	vcs_git.py	/^    def load(self):$/;"	m	class:GitInterface
+load	vcs_hg.py	/^    def load(self):$/;"	m	class:HgInterface
+load	vcs_interface.py	/^    def load(self):$/;"	m	class:VcsInterface
+load	vcs_none.py	/^    def load(self):$/;"	m	class:NoInterface
+loadFromData	output_parser.py	/^    def loadFromData(self, files, clones):$/;"	m	class:RepertoireOutput
+loadFromFile	output_parser.py	/^    def loadFromFile(self, input_path, is_rep = False):$/;"	m	class:RepertoireOutput
+makeExist	path_builder.py	/^    def makeExist(self, path):$/;"	m	class:PathBuilder
+makeLineMapFileName	path_builder.py	/^    def makeLineMapFileName(self, old_name):$/;"	m	class:PathBuilder
+myapp	display_diff.py	/^    myapp = RepDisplay(clone1, clone2)$/;"	v
+myapp	display_rep.py	/^    myapp = RepOutput(inf)$/;"	v
+newCodeFile	ccfx_input_conv.py	/^    newCodeFile   = None$/;"	v	class:CCFXInputConverter
+newConvWriter	ccfx_input_conv.py	/^    newConvWriter = None$/;"	v	class:CCFXInputConverter
+newDstLineNum	ccfx_input_conv.py	/^    newDstLineNum = 0$/;"	v	class:CCFXInputConverter
+ngram_similarity	ngram.py	/^   def ngram_similarity(samegrams, allgrams, warp=1.0):$/;"	m	class:NGram
+ngrams	ngram.py	/^   def ngrams(self, string):$/;"	m	class:NGram
+ngrams_pad	ngram.py	/^   def ngrams_pad(self, string):$/;"	m	class:NGram
+oldCodeFile	ccfx_input_conv.py	/^    oldCodeFile   = None$/;"	v	class:CCFXInputConverter
+oldConvWriter	ccfx_input_conv.py	/^    oldConvWriter = None$/;"	v	class:CCFXInputConverter
+oldDstLineNum	ccfx_input_conv.py	/^    oldDstLineNum = 0$/;"	v	class:CCFXInputConverter
+onClick	display_rep.py	/^    def onClick(self):$/;"	m	class:RepOutput
+opFilter	operation_filter.py	/^class opFilter:$/;"	c
+option	ccfx_entrypoint.py	/^		option = "-w "$/;"	v	class:CCFXEntryPoint
+option_sep	ccfx_entrypoint.py	/^			option_sep = "-is"$/;"	v	class:CCFXEntryPoint
+out_dir	Repertoire.py	/^				out_dir = line.split("OUTPUT_DIR = ")[1]$/;"	v
+out_dir	Repertoire.py~	/^				out_dir = line.split("OUTPUT_DIR = ")[1]$/;"	v
+out_dir	Repertoire_bck.py	/^				out_dir = line.split("OUTPUT_DIR = ")[1]$/;"	v	class:customAction
+output	simple_driver.py	/^			output = convert_ccfx_output(path_builder, lang, is_new)$/;"	v	class:RepDriver
+pad	ngram.py	/^   def pad(self, string):$/;"	m	class:NGram
+parser	Repertoire1.py	/^    parser = argparse.ArgumentParser(description='Repertoire command line utility')$/;"	v	class:customAction
+path	ccfx_entrypoint.py	/^		path = dir$/;"	v	class:CCFXEntryPoint
+populateDB	vcs_interface.py	/^    def populateDB(self, commits, fidx2commitid, file2fileIdx, fidx2numports):$/;"	m	class:VcsInterface
+postSetup	display_diff.py	/^    def postSetup(self):$/;"	m	class:RepDisplay
+postSetup	display_rep.py	/^    def postSetup(self):$/;"	m	class:RepOutput
+proc	ccfx_entrypoint.py	/^		proc = Popen(conv_str,shell=True,stdout=PIPE,stderr=PIPE)$/;"	v	class:CCFXEntryPoint
+process	rep_driver.py	/^    def process(self,rep_model):$/;"	m	class:RepDriver
+process	simple_driver.py	/^    def process(self, rep_model):$/;"	m	class:RepDriver
+processDiff	app_model1.py	/^    def processDiff(self):$/;"	m	class:RepertoireModel
+processDiffs	app_model1.py	/^    def processDiffs(self,proj,path):$/;"	m	class:RepertoireModel
+processImpl	rep_driver.py	/^    def processImpl(self,model):$/;"	m	class:RepDriver
+processImpl	simple_driver.py	/^    def processImpl(self, model):$/;"	m	class:RepDriver
+processPair	ccfx_entrypoint.py	/^    def processPair(self, dir0, dir1, tmp_out_path, out_path, lang = 'java'):$/;"	m	class:CCFXEntryPoint
+processPairSelf	ccfx_entrypoint.py	/^    def processPairSelf(self, dir, tmp_out_path, out_path, lang = 'java'):$/;"	m	class:CCFXEntryPoint
+process_clone	display_rep.py	/^    def process_clone(self):$/;"	m	class:RepOutput
+process_line	ccfx_input_conv.py	/^    def process_line(self, line, srcLineNum, changeId):$/;"	m	class:CCFXInputConverter
+progress	app_model1.py	/^    def progress(self,msg):$/;"	m	class:RepertoireModel
+proj0	Repertoire.py	/^				proj0 = line.split("PROJ0_DIR = ")[1]$/;"	v
+proj0	Repertoire.py~	/^				proj0 = line.split("PROJ0_DIR = ")[1]$/;"	v
+proj0	Repertoire_bck.py	/^				proj0 = line.split("PROJ0_DIR = ")[1]$/;"	v	class:customAction
+proj1	Repertoire.py	/^				proj1 = line.split("PROJ1_DIR = ")[1]$/;"	v
+proj1	Repertoire.py~	/^				proj1 = line.split("PROJ1_DIR = ")[1]$/;"	v
+proj1	Repertoire_bck.py	/^				proj1 = line.split("PROJ1_DIR = ")[1]$/;"	v	class:customAction
+rd	Repertoire.py	/^   	rd = RepDriver()$/;"	v
+rd	Repertoire.py~	/^    rd = RepDriver()$/;"	v
+remove	ngram.py	/^   def remove(self, item):$/;"	m	class:NGram
+rep_out_file	simple_driver.py	/^			rep_out_file = path_builder.getRepertoireOutputFileName(lang, is_new)$/;"	v	class:RepDriver
+rep_out_path	simple_driver.py	/^			rep_out_path = path_builder.getRepertoireOutputPath(lang, is_new)$/;"	v	class:RepDriver
+rep_populator	simple_driver.py	/^			rep_populator = RepDBPopulator(path_builder)$/;"	v	class:RepDriver
+rpm	Repertoire.py	/^	rpm = rep_model.RepModel()$/;"	v
+rpm	Repertoire.py~	/^	rpm = rep_model.RepModel()$/;"	v
+rpm	Repertoire_bck.py	/^	rpm = rep_model.RepModel()$/;"	v	class:customAction
+runCCFinderSelf	app_model1.py	/^    def runCCFinderSelf(self,proj,path):$/;"	m	class:RepertoireModel
+runRep	app_model1.py	/^    def runRep(self,proj):$/;"	m	class:RepertoireModel
+runtest	vcs_git.py	/^def runtest():$/;"	f
+runtest	vcs_hg.py	/^def runtest():$/;"	f
+runtest	vcs_none.py	/^def runtest():$/;"	f
+search	ngram.py	/^   def search(self, query, threshold=None):$/;"	m	class:NGram
+setCcfxDirectory	app_model1.py	/^    def setCcfxDirectory(self, path):$/;"	m	class:RepertoireModel
+setCcfxFileSeparator	app_model1.py	/^    def setCcfxFileSeparator(self, flag):$/;"	m	class:RepertoireModel
+setCcfxGroupSeparator	app_model1.py	/^    def setCcfxGroupSeparator(self, flag):$/;"	m	class:RepertoireModel
+setCcfxPath	rep_model.py	/^    def setCcfxPath(self, path):$/;"	m	class:RepModel
+setCcfxToken	app_model1.py	/^    def setCcfxToken(self, token_size):$/;"	m	class:RepertoireModel
+setCcfxTokenSize	rep_model.py	/^    def setCcfxTokenSize(self, token_size):$/;"	m	class:RepModel
+setDiffPath	app_model1.py	/^    def setDiffPath(self, path = None):$/;"	m	class:RepertoireModel
+setOutDirectory	app_model1.py	/^    def setOutDirectory(self, path):$/;"	m	class:RepertoireModel
+setProjDir	rep_model.py	/^    def setProjDir(self, path):$/;"	m	class:RepModel
+setRepoRoot	vcs_interface.py	/^    def setRepoRoot(self, path):$/;"	m	class:VcsInterface
+setSuffixes	app_model1.py	/^    def setSuffixes(self, jSuff = '', cSuff = '', hSuff = ''):$/;"	m	class:RepertoireModel
+setSuffixes	vcs_interface.py	/^    def setSuffixes(self, c_suff, h_suff, j_suff):$/;"	m	class:VcsInterface
+setTimeWindow	vcs_interface.py	/^    def setTimeWindow(self, earliest_time, latest_time):$/;"	m	class:VcsInterface
+setTmpDirectory	app_model1.py	/^    def setTmpDirectory(self, path):$/;"	m	class:RepertoireModel
+setVcsSuffix	rep_model.py	/^    def setVcsSuffix(self, proj, c_suff, h_suff, j_suff):$/;"	m	class:RepModel
+setVcsWhen	rep_model.py	/^    def setVcsWhen(self, proj, start, end):$/;"	m	class:RepModel
+setVcsWhere	rep_model.py	/^    def setVcsWhere(self, proj, path):$/;"	m	class:RepModel
+setVcsWhich	rep_model.py	/^    def setVcsWhich(self, proj, which_vcs = VcsTypes.Git):$/;"	m	class:RepModel
+showText	display_diff.py	/^    def showText(self,displayNo,filePath,start,end):$/;"	m	class:RepDisplay
+suf	Repertoire.py	/^				suf =  suffix.split(",")$/;"	v
+suf	Repertoire.py~	/^				suf =  suffix.split(",")$/;"	v
+suf	Repertoire_bck.py	/^				suf =  suffix.split(",")$/;"	v	class:customAction
+suffix	Repertoire.py	/^				suffix = line.split("SUFFIX = ")[1]$/;"	v
+suffix	Repertoire.py~	/^				suffix = line.split("SUFFIX = ")[1]$/;"	v
+suffix	Repertoire_bck.py	/^				suffix = line.split("SUFFIX = ")[1]$/;"	v	class:customAction
+symmetric_difference_update	ngram.py	/^   def symmetric_difference_update(self, other):$/;"	m	class:NGram
+test	operation_filter.py	/^def test():$/;"	f
+token_size	Repertoire.py	/^				token_size = line.split("TOKEN_SIZE = ")[1]$/;"	v
+token_size	Repertoire.py~	/^				token_size = line.split("TOKEN_SIZE = ")[1]$/;"	v
+token_size	Repertoire_bck.py	/^				token_size = line.split("TOKEN_SIZE = ")[1]$/;"	v	class:customAction
+translateFilterToCCFXInput	path_builder.py	/^    def translateFilterToCCFXInput(self, filter_path, is_new):$/;"	m	class:PathBuilder
+update	ngram.py	/^   def update(self, items):$/;"	m	class:NGram
+vcs	rep_model.py	/^			vcs = GitInterface(proj, self.pb)$/;"	v	class:RepModel
+vcs	rep_model.py	/^			vcs = HgInterface(proj, self.pb)$/;"	v	class:RepModel
+vcs	rep_model.py	/^			vcs = NoInterface(proj, self.pb)$/;"	v	class:RepModel
+verifyRepoPath	vcs_git.py	/^    def verifyRepoPath(self, path):$/;"	m	class:GitInterface
+verifyRepoPath	vcs_hg.py	/^    def verifyRepoPath(self, path):$/;"	m	class:HgInterface
+verifyRepoPath	vcs_interface.py	/^    def verifyRepoPath(self, path):$/;"	m	class:VcsInterface
+verifyRepoPath	vcs_none.py	/^    def verifyRepoPath(self, path):$/;"	m	class:NoInterface
+worked	ccfx_entrypoint.py	/^		worked = True$/;"	v	class:CCFXEntryPoint
+writeToFile	output_parser.py	/^    def writeToFile(self, output_path):$/;"	m	class:RepertoireOutput
