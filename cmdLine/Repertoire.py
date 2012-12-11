@@ -52,6 +52,9 @@ if __name__ == "__main__":
 
 
 	print "===\n" + str(rpm)
-   	rd = RepDriver()
-	rd.process(rpm)
+   	rd = RepDriver(rpm)
+#	rd.process(rpm)
+	rd.ccfxConvert()
+    	rd.runCCFX()
+
 	sys.exit()

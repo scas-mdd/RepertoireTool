@@ -9,6 +9,7 @@ class PathBuilder:
     Proj0 = PROJ0
     Proj1 = PROJ1
 
+
     # pass in a path to a directoy we have all to ourselves
     def __init__(self, root, force_clean = False, super_safe_mode = False):
         self.root = root
@@ -19,6 +20,9 @@ class PathBuilder:
                 # doesn't clean out normal files, but I'll let it slide
                 shutil.rmtree(self.root + os.sep + f, ignore_errors = True)
         self.exists = []
+        self.diff0 = ""
+        self.diff1 = ""
+
 
     def __getstate__(self):
         result = self.__dict__.copy()
@@ -37,7 +41,7 @@ class PathBuilder:
         self.mutex.release()
 
     def getProjRoot(self, proj):
-        path = (self.root + os.sep + proj + os.sep)
+        path = (os.path.abspath(self.root) + os.sep + proj + os.sep)
         self.makeExist(path)
         return path
 
@@ -46,6 +50,19 @@ class PathBuilder:
                 lang + os.sep + "raw_diffs" + os.sep)
         self.makeExist(path)
         return path
+
+    def setExtDiffPath(self,projNumber,path):
+        if projNumber is 0:
+            self.diff0 = path
+        if projNumber is 1:
+            self.diff1 = path
+
+    def getExtDiffPath(self,projNumber):
+        if projNumber is 0:
+            return self.diff0
+        if projNumber is 1:
+            return self.diff1
+        return None
 
     def getFilterOutputPath(self, proj, lang):
         path = (self.getProjRoot(proj) +
@@ -186,3 +203,4 @@ class LangDecider:
 
     def getFilter(self, lang):
         return self.filters[lang]
+

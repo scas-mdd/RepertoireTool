@@ -10,7 +10,6 @@ from vcs_types import VcsTypes
 class RepModel:
     def __init__(self):
         self.projDir = ''
-#        self.ccfxPath = '/home/bray/SealLab/RepertoireTool1/ccFinder/ccfx'
         self.ccfxPath = ''
         self.ccfxTokenSize = 50
         self.projs = {PathBuilder.Proj0 : None, PathBuilder.Proj1 : None}
@@ -87,10 +86,6 @@ class RepModel:
             return False
         return self.projs[proj].setRepoRoot(path)
 
-
-
-
-
     def setVcsSuffix(self, proj, c_suff, h_suff, j_suff):
         if proj != PathBuilder.PROJ0 and proj != PathBuilder.PROJ1:
             return False
@@ -113,7 +108,6 @@ class RepModel:
                 self.projs[PathBuilder.Proj1] and
                 self.projs[PathBuilder.Proj1].isComplete()
                 )
-
 
 
     def getVcsSuffix(self, proj):
@@ -149,7 +143,6 @@ class RepModel:
 
     def getPathBuilder(self):
         return self.pb
-
 
     def setVcsWhich(self, proj, which_vcs = VcsTypes.Git):
 		if proj != PathBuilder.PROJ0 and proj != PathBuilder.PROJ1:

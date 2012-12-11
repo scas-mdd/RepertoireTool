@@ -7,6 +7,7 @@
 
 from ngram import NGram
 import config
+from output_parser import Clone, ClonePair, Operation
 
 #class bigram:
 #   def __init__(self, items=[], N=2, pad_len=None, pad_char='$':
@@ -25,7 +26,7 @@ import config
 
 class opFilter:
     def __init__(self, op1=[], op2=[]):
-        #each list contains items of the form "line_number:operation"
+        # each list contains some number of Operation Tuples
         self.op1 = op1
         self.op2 = op2
         self.op1_hash = {}
@@ -34,10 +35,10 @@ class opFilter:
         self.hashOps()
 
     def hashOps(self):
-        for item in self.op1:
-            self.op1_hash[int(item[0])] = self.opType[item[1]]
-        for item in self.op2:
-            self.op2_hash[int(item[0])] = self.opType[item[1]]
+        for op in self.op1:
+            self.op1_hash[op.line] = self.opType[op.op]
+        for op in self.op2:
+            self.op2_hash[op.line] = self.opType[op.op]
 
     def hasChanged(self,opStr):
         isChanged = True
@@ -48,13 +49,13 @@ class opFilter:
     def filterByOp(self,clone):
         opStr1 = ""
         opStr2 = ""
-        indx1,start1,end1 = clone[1]
-        indx2,start2,end2 = clone[2]
+        _, start1, end1, _ = clone.clone1
+        _, start2, end2, _ = clone.clone2
 
         for i in range(start1,end1+1):
-            opStr1 += str(self.op1_hash.get(i,-1))
+            opStr1 += self.op1_hash.get(i, "X")
         for i in range(start2,end2+1):
-            opStr2 += str(self.op2_hash.get(i,-1))
+            opStr2 += self.op2_hash.get(i, "X")
 
         if config.DEBUG is True:
             print "start1 = %d, end1 = %d, ops = %s" % (start1,end1,opStr1)

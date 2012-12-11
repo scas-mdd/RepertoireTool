@@ -33,8 +33,15 @@ class CCFXInputConverter:
         if (line.startswith('====') or line.startswith('RCS') or
             line.startswith('retrieving') or line.startswith('diff') or
             line.startswith('***') or line.startswith('---') or
-            line.startswith('***')):
+            line.startswith('@@') or line.startswith('+++') or line.strip().startswith('* ')):
             return
+        elif (("/*" in line) and ("*/" not in line)):
+            return
+        elif (("/*" not in line) and ("*/" in line)):
+            return
+        elif line.strip() is "*":
+            return
+
         elif line.startswith('!'):
             temp_line = line.partition('!')[2]
             operation = Operations.MODIFIED
@@ -60,9 +67,11 @@ class CCFXInputConverter:
 
     # reportProgress is a function that takes no arguments
     def convert(self, path_builder, reportProgress = None):
+
         for proj in [PathBuilder.PROJ0, PathBuilder.PROJ1]:
             for lang in ['cxx', 'hxx', 'java']:
                 input_path = path_builder.getFilterOutputPath(proj, lang)
+                print "input path : " + input_path
                 old_conv_path = path_builder.getLineMapPath(proj, lang, False)
                 new_conv_path = path_builder.getLineMapPath(proj, lang, True)
                 old_cc_path = path_builder.getCCFXInputPath(proj, lang, False)
@@ -76,6 +85,7 @@ class CCFXInputConverter:
                 os.mkdir(old_cc_path)
                 os.mkdir(new_cc_path)
                 for input_file in os.listdir(input_path):
+                    print input_file
                     inf = open(input_path + input_file, 'r')
                     self.oldCodeFile = open(old_cc_path + input_file, 'w')
                     self.newCodeFile = open(new_cc_path + input_file, 'w')
@@ -103,6 +113,7 @@ class CCFXInputConverter:
                     fileName = ''
                     last_idx = -1
                     for idx, line in enumerate(inf):
+                        print line
                         last_idx = idx
                         if (not searching and
                             not (line.startswith(' ') or
@@ -155,5 +166,102 @@ class CCFXInputConverter:
                     newConv.close()
                     if not reportProgress is None:
                         reportProgress()
+
+
+    '''
+    convertExtDiffs is specific to BSD diffs right now
+    '''
+    def convertExtDiffs(self, path_builder,reportProgress = None):
+
+        count = 0
+        lang = "cxx"
+
+        for proj in [PathBuilder.PROJ0, PathBuilder.PROJ1]:
+            count += 1
+            input_path = path_builder.getFilterOutputPath(proj, lang)
+            old_conv_path = path_builder.getLineMapPath(proj, lang, False)
+            new_conv_path = path_builder.getLineMapPath(proj, lang, True)
+            old_cc_path = path_builder.getCCFXInputPath(proj, lang, False)
+            new_cc_path = path_builder.getCCFXInputPath(proj, lang, True)
+            shutil.rmtree(old_conv_path, ignore_errors=True)
+            shutil.rmtree(new_conv_path, ignore_errors=True)
+            shutil.rmtree(old_cc_path, ignore_errors=True)
+            shutil.rmtree(new_cc_path, ignore_errors=True)
+            os.mkdir(old_conv_path)
+            os.mkdir(new_conv_path)
+            os.mkdir(old_cc_path)
+            os.mkdir(new_cc_path)
+
+            diff_path = path_builder.getExtDiffPath(count-1);
+            for input_file in os.listdir(diff_path):
+                print input_file
+                inf = open(diff_path + os.sep + input_file, 'r')
+                self.oldCodeFile = open(old_cc_path + input_file, 'w')
+                self.newCodeFile = open(new_cc_path + input_file, 'w')
+                oldConv = open(old_conv_path +
+                            path_builder.makeLineMapFileName(input_file), 'w')
+                self.oldConvWriter = csv.writer(oldConv,delimiter=',')
+                newConv = open(new_conv_path + path_builder.makeLineMapFileName(input_file), 'w')
+                self.newConvWriter = csv.writer(newConv,delimiter=',')
+                self.oldConvWriter.writerow(
+                        ['Target Line Number',
+                        'Original Line Number',
+                        'Operation', 'Change Id'
+                        ])
+                self.newConvWriter.writerow(
+                        ['Target Line Number',
+                            'Original Line Number',
+                            'Operation',
+                            'Change Id'
+                            ])
+                self.oldDstLineNum = 0
+                self.newDstLineNum = 0
+
+                srcFile = False
+                changeId = 0
+                fileName = ''
+                last_idx = -1
+
+                for idx, line in enumerate(inf):
+                    last_idx = idx
+                    #cvs specific
+                    if line.startswith("Index:"):
+                        fileName = line[7:]
+                        fileExtension = os.path.splitext(fileName)[1].strip()
+                        if ((fileExtension == ".c")
+                                or (fileExtension == ".h")):
+#                            print fileName
+                            changeId += 1
+                            firstSearchingLine = False
+                            self.oldConvWriter.writerow([fileName])
+                            self.newConvWriter.writerow([fileName])
+                            temp_line = (
+                                    "/* --- " +
+                                    fileName +
+                                    " --- */" +
+                                    "\n"
+                                    )
+                            self.oldCodeFile.writelines(temp_line)
+                            self.newCodeFile.writelines(temp_line)
+                            self.oldDstLineNum += 1
+                            self.newDstLineNum += 1
+                            srcFile = True
+                            continue
+                        else:
+                            srcFile = False
+
+
+                    if srcFile:
+                        self.process_line(line, idx + 1, changeId)
+
+                if last_idx == -1:
+                    print 'bad one: ' + input_file
+                inf.close()
+                self.oldCodeFile.close()
+                self.newCodeFile.close()
+                oldConv.close()
+                newConv.close()
+                if not reportProgress is None:
+                    reportProgress()
 
 

@@ -44,9 +44,12 @@ class CCFXMetaMapping:
 
 def convert_ccfx_output(pb, lang, is_new, debug = False):
     metaDB = CCFXMetaMapping()
+    count = 0
     # maps from ccfx input paths to meta objects representing the files
     for proj in [PathBuilder.PROJ0, PathBuilder.PROJ1]:
-        filter_path = pb.getFilterOutputPath(proj, lang)
+        count += 1
+#        filter_path = pb.getFilterOutputPath(proj, lang)
+        filter_path = pb.getExtDiffPath(count-1)
         conv_path   = pb.getLineMapPath(proj, lang, is_new)
         ccfx_i_path = pb.getCCFXInputPath(proj, lang, is_new)
         ccfx_p_path = pb.getCCXFPrepPath(proj, lang, is_new)
@@ -230,6 +233,7 @@ def split_clone_into_hunks(clone_pair, debug = False):
     # second filter the hunks w.r.t their operations
     op_filter = opFilter(clone1.ops, clone2.ops)
     for clone_pair in clones:
+#        print clone_pair
         metric = op_filter.filterByOp(clone_pair)
         if not metric is None:
             ret.append(ClonePair(clone_pair.clone1, clone_pair.clone2, metric))
