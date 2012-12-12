@@ -33,15 +33,9 @@ class CCFXInputConverter:
         if (line.startswith('====') or line.startswith('RCS') or
             line.startswith('retrieving') or line.startswith('diff') or
             line.startswith('***') or line.startswith('---') or
-            line.startswith('@@') or line.startswith('+++') or line.strip().startswith('* ')):
+            line.startswith('@@') or line.startswith('+++')):
+#            line.startswith('@@') or line.startswith('+++') or line.strip().startswith('* ')):
             return
-        elif (("/*" in line) and ("*/" not in line)):
-            return
-        elif (("/*" not in line) and ("*/" in line)):
-            return
-        elif line.strip() is "*":
-            return
-
         elif line.startswith('!'):
             temp_line = line.partition('!')[2]
             operation = Operations.MODIFIED
@@ -226,7 +220,8 @@ class CCFXInputConverter:
                     last_idx = idx
                     #cvs specific
                     if line.startswith("Index:"):
-                        fileName = line[7:]
+                        fileName = line[7:].strip();
+#                        fileName = "\"" + fileName + "\""
                         fileExtension = os.path.splitext(fileName)[1].strip()
                         if ((fileExtension == ".c")
                                 or (fileExtension == ".h")):
@@ -249,7 +244,6 @@ class CCFXInputConverter:
                             continue
                         else:
                             srcFile = False
-
 
                     if srcFile:
                         self.process_line(line, idx + 1, changeId)

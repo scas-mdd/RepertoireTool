@@ -84,9 +84,10 @@ def convert_ccfx_output(pb, lang, is_new, debug = False):
         for i, cline in enumerate(conv):
             if i < 2:
                 continue
-            if  cline.rstrip().startswith('"'): #filename-->skip the line
+            if  cline.rstrip().startswith('src'): #filename-->skip the line
                 continue
 
+#            print cline
             dstIdx,srcIdx,op,changId = cline.split(',')
             input2orig[int(dstIdx)] = int(srcIdx)
             origline2op[int(srcIdx)] = op

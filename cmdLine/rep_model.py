@@ -53,7 +53,8 @@ class RepModel:
         if self.getProjDir() == path:
             # we've already set up this directory
             return True
-        uniq = 'repertoire_tmp_' + str(int(os.times()[4] * 100))
+        #uniq = 'repertoire_tmp_' + str(int(os.times()[4] * 100))
+        uniq = 'repertoire_out'
         self.projDir = path + os.sep + uniq
         os.mkdir(self.projDir)
         self.pb = PathBuilder(self.projDir)

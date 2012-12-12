@@ -1,4 +1,5 @@
 import time
+import os
 
 from ccfx_entrypoint import CCFXEntryPoint
 from ccfx_input_conv import CCFXInputConverter
@@ -18,8 +19,8 @@ class RepDriver():
 
     def ccfxConvert(self):
         print "Converting diffs to ccfx compatible format"
-        proj0_repo = self.proj0.getRepoRoot()
-        proj1_repo = self.proj1.getRepoRoot()
+        proj0_repo = self.proj0.getRepoRoot() + os.sep
+        proj1_repo = self.proj1.getRepoRoot() + os.sep
         print proj0_repo
         print proj1_repo
         self.path_builder.setExtDiffPath(0,proj0_repo)
