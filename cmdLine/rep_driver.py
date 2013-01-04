@@ -19,45 +19,49 @@ class RepDriver():
 
     def ccfxConvert(self):
         print "Converting diffs to ccfx compatible format"
-        proj0_repo = self.proj0.getRepoRoot() + os.sep
-        proj1_repo = self.proj1.getRepoRoot() + os.sep
-        print proj0_repo
-        print proj1_repo
-        self.path_builder.setExtDiffPath(0,proj0_repo)
-        self.path_builder.setExtDiffPath(1,proj1_repo)
+        if(self.proj0):
+            proj0_repo = self.proj0.getRepoRoot() + os.sep
+            print proj0_repo
+            self.path_builder.setExtDiffPath(0,proj0_repo)
+
+        if(self.proj1):
+            proj1_repo = self.proj1.getRepoRoot() + os.sep
+            print proj1_repo
+            self.path_builder.setExtDiffPath(1,proj1_repo)
 
         self.converter.convertExtDiffs(self.path_builder)
 
-    def runCCFX_old(self):
+    def runCCFX_old(self,lang):
         print "Running ccFinder for old files, this will take quite some time..."
-        have_old_c = self.ccfx.processPairs(LangDecider.CXX, False)
+        have_old_lang = self.ccfx.processPairs(lang, False)
 
         print"Filtering ccFinder old  output based on operation..."
-        if have_old_c:
+        if have_old_lang:
             is_new = False
-            lang = LangDecider.CXX
             output = convert_ccfx_output(self.path_builder, lang, is_new)
             rep_out_path = self.path_builder.getRepertoireOutputPath(lang, is_new)
             rep_out_file = self.path_builder.getRepertoireOutputFileName(lang, is_new)
             output.writeToFile(rep_out_path + rep_out_file)
 
-    def runCCFX_new(self):
+    def runCCFX_new(self,lang):
 
         print"Running ccFinder for new files, this will take quite some time..."
-        have_new_c = self.ccfx.processPairs(LangDecider.CXX, True)
+        have_new_lang = self.ccfx.processPairs(lang, True)
 
         print "Filtering ccFinder new  output based on operation..."
-        if have_new_c:
+        if have_new_lang:
             is_new = True
-            lang = LangDecider.CXX
+#            lang = have_new_lang
             output = convert_ccfx_output(self.path_builder, lang, is_new)
             rep_out_path = self.path_builder.getRepertoireOutputPath(lang, is_new)
             rep_out_file = self.path_builder.getRepertoireOutputFileName(lang, is_new)
             output.writeToFile(rep_out_path + rep_out_file)
 
     def runCCFX(self):
-#        self.runCCFX_old()
-        self.runCCFX_new()
+   #     self.runCCFX_old()
+        for lang in [LangDecider.CXX,LangDecider.HXX,LangDecider.JAVA]:
+            self.runCCFX_new(lang)
+            self.runCCFX_old(lang)
 
     def process(self,rep_model):
         msg, success = self.processImpl(rep_model)

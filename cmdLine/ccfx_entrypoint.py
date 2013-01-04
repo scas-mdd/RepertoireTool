@@ -19,7 +19,61 @@ class CCFXEntryPoint:
                 lang, is_new, is_tmp = True)
         out = clone_path + self.pb.getCCFXOutputFileName(
                 lang, is_new, is_tmp = False)
-        return self.processPair(path0, path1, tmp_out, out, lang)
+        if path1 is None:
+            #Only one project
+            return self.processDir(path0, tmp_out, out, lang)
+        else:
+            return self.processPair(path0, path1, tmp_out, out, lang)
+
+    def processDir(self, dir0, tmp_out_path, out_path, lang = 'java'):
+        if lang != 'java':
+            lang = 'cpp'
+
+        option = "-w "
+        option_sep = ""
+        if self.fileSep is True: #no intra-file clone
+            option += "w-"
+        else:
+            option += "w+"
+        '''
+        if self.grpSep: #no intra-group clone
+            option += "f-g+"
+            option_sep = "-is"
+        else:
+            option += "f+"
+        '''
+        cmd_str = (
+            '{0} d {1} -dn {2} {3} -b {4} -o {5}'.format(
+                self.ccfxPath,
+                lang,
+                dir0,
+                option,
+                self.tokenSize,
+                tmp_out_path))
+
+        if config.DEBUG is True:
+            print cmd_str
+
+        proc = Popen(cmd_str,shell=True,stdout=PIPE,stderr=PIPE)
+        proc.wait()
+        if proc.returncode != 0:
+            print "Couldn't run %s successfully" % (cmd_str)
+            print "error code = " + str(proc.returncode)
+            return False
+
+        conv_str = '{0} p {1} > {2}'.format(self.ccfxPath, tmp_out_path, out_path)
+
+        if config.DEBUG is True:
+            print conv_str
+        proc = Popen(conv_str,shell=True,stdout=PIPE,stderr=PIPE)
+        proc.wait()
+        if proc.returncode != 0:
+            print "Couldn't run %s successfully" % (cmd_str)
+            print "error code = " + str(proc.returncode)
+            return False
+
+
+        return True
 
     def processPair(self, dir0, dir1, tmp_out_path, out_path, lang = 'java'):
         if lang != 'java':

@@ -20,8 +20,10 @@ class RepModel:
 		class_string = "projDir : " + self.projDir + "\n"
 		class_string += "ccfxPath : " + self.ccfxPath + "\n"
 		class_string += "ccfxTokenSize : " + str(self.ccfxTokenSize) + "\n"
-		class_string += "proj0 : " + str(self.projs[PathBuilder.PROJ0].getRepoRoot()) + "\n"
-		class_string += "proj1 : " + str(self.projs[PathBuilder.PROJ1].getRepoRoot()) + "\n"
+        	if(self.projs[PathBuilder.PROJ0]):
+		    class_string += "proj0 : " + str(self.projs[PathBuilder.PROJ0].getRepoRoot()) + "\n"
+        	if(self.projs[PathBuilder.PROJ1]):
+		    class_string += "proj1 : " + str(self.projs[PathBuilder.PROJ1].getRepoRoot()) + "\n"
 		return class_string
 
     @staticmethod

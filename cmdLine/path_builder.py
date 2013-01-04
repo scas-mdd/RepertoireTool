@@ -20,8 +20,8 @@ class PathBuilder:
                 # doesn't clean out normal files, but I'll let it slide
                 shutil.rmtree(self.root + os.sep + f, ignore_errors = True)
         self.exists = []
-        self.diff0 = ""
-        self.diff1 = ""
+        self.diff0 = None
+        self.diff1 = None
 
 
     def __getstate__(self):
@@ -32,6 +32,11 @@ class PathBuilder:
     def __setstate__(self, a_dict):
         self.__dict__ = a_dict
         self.mutex = RLock()
+
+    def isExist(self, path):
+        if not path in self.exists and not self.superSafeMode:
+            return False
+        return True
 
     def makeExist(self, path):
         self.mutex.acquire()
@@ -75,9 +80,13 @@ class PathBuilder:
         ext = '_old'
         if is_new:
             ext = '_new'
-        path = (self.getProjRoot(proj) +
-                lang + os.sep + "ccfx_input"  + ext + os.sep)
-        self.makeExist(path)
+        path = os.path.abspath(self.root) + os.sep + proj + os.sep
+        #path = (self.getProjRoot(proj) +
+        if self.isExist(path) is False:
+            print "!!! " + path + " does not exists"
+            return None
+
+        path += lang + os.sep + "ccfx_input"  + ext + os.sep
         return path
 
     # is_new is true iff we're dealing with the new context
@@ -85,6 +94,9 @@ class PathBuilder:
         ext = '_old'
         if is_new:
             ext = '_new'
+        print "****"
+        print proj
+        print lang
         path = (self.root + os.sep + proj + os.sep +
                 lang + os.sep + "ccfx_mappings" + ext + os.sep)
         self.makeExist(path)
@@ -99,6 +111,9 @@ class PathBuilder:
         return old_name.partition('.')[0] + '.conv'
 
     def getCCXFPrepPath(self, proj, lang, is_new):
+        print "----" + proj
+        if proj is None:
+            return None
         return self.getCCFXInputPath(proj, lang, is_new) + '.ccfxprepdir' + os.sep
 
     def getCCFXOutputFileName(self, lang, is_new, is_tmp):

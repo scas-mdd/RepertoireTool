@@ -26,6 +26,10 @@ class CCFXMetaData:
         self.filterConv = filter_conv
         self.filterOutput = filter_output
 
+    def __str__(self):
+        printStr = self.ccfxInput + "," + self.ccfxPrep + "," + self.filterConv + "," + self.filterOutput
+        return printStr
+
 class CCFXMetaMapping:
     def __init__(self):
         self.name2meta = {}
@@ -43,19 +47,25 @@ class CCFXMetaMapping:
         return not self.getMetaForPath is None
 
 def convert_ccfx_output(pb, lang, is_new, debug = False):
+    #debug = True
     metaDB = CCFXMetaMapping()
     count = 0
     # maps from ccfx input paths to meta objects representing the files
     for proj in [PathBuilder.PROJ0, PathBuilder.PROJ1]:
-        count += 1
 #        filter_path = pb.getFilterOutputPath(proj, lang)
-        filter_path = pb.getExtDiffPath(count-1)
+        filter_path = pb.getExtDiffPath(count)
+        count += 1
+        if filter_path is None:
+            continue
+
+        if debug:
+            print "filter_path = " + filter_path
         conv_path   = pb.getLineMapPath(proj, lang, is_new)
         ccfx_i_path = pb.getCCFXInputPath(proj, lang, is_new)
         ccfx_p_path = pb.getCCXFPrepPath(proj, lang, is_new)
         for name in os.listdir(filter_path):
             meta = CCFXMetaData(
-                    ccfx_i_path + name,
+                    ccfx_i_path + name + "." + lang,
                     ccfx_p_path + pb.findPrepFileFor(ccfx_p_path, name),
                     conv_path + pb.makeLineMapFileName(name),
                     filter_path + name)
@@ -64,9 +74,10 @@ def convert_ccfx_output(pb, lang, is_new, debug = False):
     # we have our files, now map line numbers in the prep files to input files
     for meta in metaDB.getMetas():
 
-        if config.DEBUG is True:
-            print "prep file = " + meta.ccfxPrep
-            print "conv file = " + meta.filterConv
+        if debug is True:
+            print meta
+            #print "prep file = " + meta.ccfxPrep
+            #print "conv file = " + meta.filterConv
 
         prepHandler = open(meta.ccfxPrep, 'r')
         prep = prepHandler.readlines()
@@ -242,27 +253,38 @@ def split_clone_into_hunks(clone_pair, debug = False):
     return ret
 
 def get_adj_hunk(ops, debug = False):
-    hunks = []
+    if debug:
+        print ops
+    hunks = set()
     if len(ops) < 1:
         if debug:
             print 'How did we end up with no ops to get hunks from?'
         return hunks
     start = end = ops[0].line
     is_hunk = True
+    is_start = True
 
-    for i in range(1,len(ops)):
-        if ops[i].op == "X":
+    for opn in ops:
+        if opn.op == "X":
             if is_hunk is True:
-                hunks.append((start, end))
+                hunks.add((start, end))
                 is_hunk = False
+                is_start = True
         else:
-            end = ops[i].line
+            if is_start is True:
+                if opn.op != 'NOCHANGE':
+                    start = opn.line
+                    is_start = False
+
+            if opn.op != 'NOCHANGE':
+                end = opn.line
+
             if is_hunk is False:
                 start = end
                 is_hunk = True
 
-    hunks.append((start, end))
-    return hunks
+    hunks.add((start, end))
+    return list(hunks)
 
 
 if __name__ == "__main__":

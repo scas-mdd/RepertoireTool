@@ -55,6 +55,6 @@ if __name__ == "__main__":
    	rd = RepDriver(rpm)
 #	rd.process(rpm)
 	rd.ccfxConvert()
-    	rd.runCCFX()
+	rd.runCCFX()
 
 	sys.exit()
