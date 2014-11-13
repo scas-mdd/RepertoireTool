@@ -1,13 +1,20 @@
+EDIT: This is a fork of SealLab/RepertoireTool . I forked it in case it dissapears. I use this fork together with CCFinderX
+to find similar patches in ErikZalm/Marlin. I updated the description to reflect my changes to install RepertoireTool
+
 Guide to Repertoire:
 
 Repertoire is used in two stages.  First you have to build a repertoire database, and then you can run analysis on the database.  The database is an efficient representation of the ports between two code bases.  However, if you have not compiled Repertoire, then you'll need to do that first.
 
 To compile Repertoire:
 1. Install dependencies
-  - Python 2.7
-  - Qt 4.x
-  - pyuic4
-  - This definitely works on dolphin and Ubuntu 12.04
+  a) Python 2.7
+  b) Qt 4.x
+  c) pyuic4
+  d) This definitely works on dolphin and Ubuntu 12.04
+  
+  b) sudo apt-get install qt4-dev-tools libqt4-dev libqt4-core libqt4-gui
+  c) sudo apt-get install pyqt4-dev-tools
+  
 2. Run 'make' from src/
 3. Run 'make' from src/analysis/
 4. Obtain a working copy of ccFinder for your distribution
